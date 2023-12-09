@@ -16,9 +16,29 @@
       to avoid connecting the SDK to running emulators.
     -->
     <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+
+    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
   </head>
   <body>
-    <div id="message">
-      <h2>Test this is working now</h2>
-    </body>
+    
+    <canvas class="webgl"></canvas>
+
+    <nav>
+      <a href="/">Sphere</a>
+      <ul>
+        <li>Explore</li>
+        <li>Create</li>
+      </ul>
+    </nav>
+    <h1 class="title">Give it a spin</h1>
+
+    <!-- Include Three.js from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Javascript file -->
+    <script type="module" src="js/index.js"></script>
+  </body>
 </html>
