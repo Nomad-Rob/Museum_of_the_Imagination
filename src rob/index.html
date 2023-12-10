@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Museum of the Imagination</title>
+    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    
+    <main>
+        <div class="loading">
+            <p class="counterLoading">0 %</p>
+        </div>
+
+        <div class="started">
+            <button class="started-btn">▶</button>
+            <p><strong>Scroll for use this application.</strong></br>For a better experience, a music will play when your clicked on this button</p>
+        </div>
+
+        <div class="player">
+            <button class="player-close"></button>
+            <iframe class="player-source" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+
+        <canvas class="main-webgl"></canvas>
+    </main>
+
+    <footer>
+        <p>Inspired by <a target="_blank" href="https://theyearofgreta.com/">theyearofgreta</a> and <a target="_blank" href="https://benjamincode.tv/">benjamincode.tv</a></p>
+    </footer>
+
+    <!-- Include Three.js from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Javascript file -->
+    <script type="module" src="js/index.js"></script>
+  </body>
+</html>
