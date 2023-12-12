@@ -148,7 +148,7 @@ const loadingManager = new THREE.LoadingManager(
 
 const continueAnimation = () => {
   // Music and sounds here
-  // music.play()
+  music.play()
   
   // Started
   gsap.to(started, 0.5, {
@@ -196,31 +196,27 @@ let models = []
 // Initialize the GLTFLoader with the loadingManager.
 gltfLoader.load(
   "models/santa.glb",
-  (gltf) => { // Callback function that is executed once the model has loaded.
-    // Set the scale of the model. This uniformly scales the model in all three dimensions.
-    gltf.scene.scale.set(5, 5, 5)
-    gltf.scene.position.y = intitialPositionMeshY
-    gltf.scene.rotation.y = intitialRotationMeshY
-    
-    // Add the model to the scene.
-    scene.add(gltf.scene)
-    // Add the model to the 'models' array for later use.
-    models.push(gltf.scene)
-    
-    // Traversing all the children of the loaded model
-    scene.traverse((child) => {
-      // Check if the child is a mesh and if its material is MeshStandardMaterial.
-      if(child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
-        // Set the environment map intensity of the material.
-        child.material.envMapIntensity = debugObject.envMapIntensity
-        // Flag the material to be updated in the next render cycle.
-        child.material.needsUpdate = true
-      }
-  })
+  (gltf) => {
+      // Set the scale of the model.
+      gltf.scene.scale.set(2, 2, 2)
+      gltf.scene.position.y = initialPositionMeshY
+      gltf.scene.rotation.y = initialRotationMeshY
+
+      scene.add(gltf.scene)
+      models.push(gltf.scene)
+
+      scene.traverse((child) =>
+      {
+          if(child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial)
+          {
+              child.material.envMapIntensity = debugObject.envMapIntensity
+              child.material.needsUpdate = true
+          }
+      })
   },
-  undefined, // Placeholder for a progress callback function (not used here).
-  (error) => { // Callback function that is executed if there is an error during loading.
-    console.log(error)
+  undefined,
+  (err) => {
+      console.log(err)
   }
 )
 
@@ -228,51 +224,48 @@ let startTouch = 0
 
 // Load Rock model
 gltfLoader.load(
-    "models/rock.glb", // Path to the .glb file
-    (gltf) => {
-        // Scale, position, and rotation settings remain the same as before
-        gltf.scene.scale.set(2.5, 2, 2.5)
-        gltf.scene.position.y = initialPositionMeshY - 1.73
-        gltf.scene.rotation.y = initialRotationMeshY
+  "models/rock.glb",
+  (gltf) => {
+      gltf.scene.scale.set(5, 2, 5)
+      gltf.scene.position.y = initialPositionMeshY - 1.
+      gltf.scene.rotation.y = initialRotationMeshY
 
-        // Add the loaded Rock GLB model to the scene
-        scene.add(gltf.scene)
+      scene.add(gltf.scene)
+      models.push(gltf.scene)
 
-        // Store the model for later use
-        models.push(gltf.scene)
+      scene.traverse((child) =>
+      {
+          if(child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial)
+          {
+              child.material.envMapIntensity = debugObject.envMapIntensity
+              child.material.needsUpdate = true
+          }
+      })
 
-        // Traverse through the model's children to adjust material properties
-        scene.traverse((child) => {
-            if(child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
-                child.material.envMapIntensity = debugObject.envMapIntensity
-                child.material.needsUpdate = true
-            }
-        })
+      // Event Animation
+      if("ontouchstart" in window) {
 
-        // Touch and wheel event listeners for interaction
-        if("ontouchstart" in window) {
-            window.addEventListener('touchstart', (e) => {
-                startTouch = e.touches[0].clientY
-            }, false)
+          window.addEventListener('touchstart', (e) => {
+              startTouch = e.touches[0].clientY
+          }, false)
 
-            window.addEventListener('touchmove', (e) => {
-                if (e.touches[0].clientY < startTouch) {
-                    startTouch = e.touches[0].clientY
-                    animationScroll(e, true, startTouch, "up")
-                } else {
-                    startTouch = e.touches[0].clientY
-                    animationScroll(e, true, startTouch, "down")
-                }
-            }, false)
-        } else {
-            window.addEventListener("wheel", (e) => animationScroll(e), false)
-        }
-    },
-    undefined, // Placeholder for a progress callback function (not used here)
-    (error) => {
-        // Log any errors to the console
-        console.log(error)
-    }
+          window.addEventListener('touchmove', (e) => {
+              // animationScroll(e)
+              if (e.touches[0].clientY < startTouch) {
+                  startTouch = e.touches[0].clientY
+                  animationScroll(e, true, startTouch, "up")
+              } else {
+                  startTouch = e.touches[0].clientY
+                  animationScroll(e, true, startTouch, "down")
+              }
+          }, false)
+
+       } else window.addEventListener("wheel", (e) => animationScroll(e), false)
+  },
+  undefined,
+  (err) => {
+      console.log(err)
+  }
 )
 
 // Set the environment map intensity to 5 in the debugObject.
@@ -280,14 +273,14 @@ gltfLoader.load(
 // A higher value results in more pronounced reflections, enhancing the visual impact of reflective surfaces.
 // This setting is used later in the code to apply to materials that support environment mapping,
 // like MeshStandardMaterial or MeshPhysicalMaterial, to increase their reflective quality.
-debugObject.envMapIntensity = 5
+debugObject.envMapIntensity = 2
   
 // Camera Settings
 
 const camera = new THREE.PerspectiveCamera(75, sizesCanvas.width / sizesCanvas.height, 0.1, 100)
-camera.position.x = 0
-camera.position.y = 0
-camera.position.z = - 5
+camera.position.x = 3.5
+camera.position.y = 1.5
+camera.position.z = -6
 scene.add(camera)
 
 // Background camera with orthographic camera
@@ -310,10 +303,8 @@ scene.add(pointLight)
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({
-  canvas: canvas,
-  alpha: true,
+  canvas: canvas
 })
-
 renderer.setSize(sizesCanvas.width, sizesCanvas.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.autoClear = false
