@@ -3,6 +3,7 @@ import { gsap, Power1 } from 'gsap'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
+const imageTextures = []
 const player = document.querySelector(".player")
 const playerClose = document.querySelector(".player-close")
 const playerSource = document.querySelector(".player-source")
@@ -86,6 +87,29 @@ music.volume = 0.05
 
 
 // Loaders
+
+// Create an array to store the image planes
+const imagePlanes = []
+
+// Create image planes and position them around Santa
+for (let i = 0; i < 20; i++) {
+  const geometry = new THREE.PlaneGeometry(1, 1);
+  const material = new THREE.MeshBasicMaterial({ map: imageTextures[i], transparent: true });
+  const imagePlane = new THREE.Mesh(geometry, material);
+
+  // Calculate the position of the image planes in a circular pattern
+  const radius = 10; // Adjust the radius as needed
+  const angle = (i / 20) * Math.PI * 2;
+  const x = Math.cos(angle) * radius;
+  const y = Math.sin(angle) * radius;
+  const z = -10; // Adjust the z-coordinate as needed
+
+  imagePlane.position.set(x, y, z);
+  imagePlanes.push(imagePlane);
+  scene.add(imagePlane);
+}
+
+
 const loadingManager = new THREE.LoadingManager(
   function () {
     window.setTimeout(function () {
@@ -150,6 +174,7 @@ const loadingManager = new THREE.LoadingManager(
     // This creates a visual effect that represents the loading progress.
     header.style.width = `${progressRatio * 550}.toFixed(0)px`
   }
+  
 )
 
 // Continue Animation Loading
@@ -172,7 +197,7 @@ const continueAnimation = () => {
     delay: 1,
     x: 3.0,
     y: 10,
-    z: -15
+    z: -20
   })
   //// Setting a timeout to execute the following block of code after a delay of 250 milliseconds.
   setTimeout(() => {
@@ -190,11 +215,6 @@ const continueAnimation = () => {
 
 // Addiing images to the scene
 const textureLoader = new THREE.TextureLoader(loadingManager)
-
-const imagesLoad1 = textureLoader.load("images/cozy_room.jpg")
-const imagesLoad2 = textureLoader.load("images/light_made_tree.jpg")
-const imagesLoad3 = textureLoader.load("images/lightpost.jpg")
-const imagesLoad4 = textureLoader.load("images/sleeping_dog.jpg")
 
 // Create a new GLTFLoader instance, passing the loadingManager to handle loading events.
 const gltfLoader = new GLTFLoader(loadingManager)
@@ -306,10 +326,10 @@ debugObject.envMapIntensity = 2
   
 // Camera Settings
 // (FOV, aspect ratio, near clipping plane, far clipping plane)
-const camera = new THREE.PerspectiveCamera(75, sizesCanvas.width / sizesCanvas.height, 0.1, 200)
-camera.position.x = 
+const camera = new THREE.PerspectiveCamera(90, sizesCanvas.width / sizesCanvas.height, 0.1, 300)
+camera.position.x = 1
 camera.position.y = 20
-camera.position.z = -30
+camera.position.z = -40
 scene.add(camera)
 
 // Background camera with orthographic camera
@@ -338,9 +358,15 @@ renderer.setSize(sizesCanvas.width, sizesCanvas.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.autoClear = false
 
+// Load 20 images from the "images" folder
+for (let i = 1; i <= 20; i++) {
+  const imageUrl = `${i}.jpg`;
+  const texture = textureLoader.load(imageUrl);
+  imageTextures.push(texture);
+}
 
 // Animation
-const animationScroll = (eventObject, touchEvent, valuse, downOrUp) => {
+const animationScroll = (eventObject, touchEvent, value, downOrUp) => {
   let deltaY
   
   if (touchEvent) deltaY = value
@@ -368,6 +394,14 @@ const animationScroll = (eventObject, touchEvent, valuse, downOrUp) => {
         else if (index === 1) model.position.y = (initialPositionMeshY - 1.73) - scroll * (speed * 0.8)
 
         model.position.z = - scroll * (speed * 0.75)
+        
+        const zoomLevel = scroll / 435; // Adjust the denominator as needed
+        const targetZoom = 5; // Adjust the target zoom level as needed
+        const zoom = Math.min(zoomLevel, targetZoom);
+        
+          // Update the camera position to zoom in on Santa
+        camera.position.z = -40 - zoom * 10; // Adjust the values as needed
+        camera.lookAt(0, 0, -10); // Adjust the lookAt position as needed
     })
     
     // Update group of planes
