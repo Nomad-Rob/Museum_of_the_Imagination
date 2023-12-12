@@ -3,7 +3,9 @@ import { gsap, Power1 } from 'gsap'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
-
+const player = document.querySelector(".player")
+const playerClose = document.querySelector(".player-close")
+const playerSource = document.querySelector(".player-source")
 const counterLoading = document.querySelector(".counterLoading")
 const header = document.querySelector("header")
 const h1 = document.querySelector("h1")
@@ -11,14 +13,21 @@ const footer = document.querySelector("footer")
 const loading = document.querySelector(".loading")
 const started = document.querySelector(".started")
 const startedBtn = document.querySelector(".started-btn")
-
+let touchValue = 1
 let videoLook = false
 let scrollI = 0.0
 let initialPositionMeshY = -1
 let initialRotationMeshY = Math.PI * 0.9
-
+let planeClickedIndex = -1
 let isLoading = false
-
+let lastPosition = {
+    px: null,
+    py: null,
+    pz: null,
+    rx: null,
+    ry: null,
+    rz: null
+}
 
 // Debug
 const debugObject = {}
@@ -28,7 +37,7 @@ const canvas = document.querySelector(".main-webgl")
 
 // Scene
 const scene = new THREE.Scene();
-scene.background = new THREE.Color("#ffff");
+scene.background = new THREE.Color("#ff69b4");
 
 // background scene
 const backgroundScene = new THREE.Scene()
@@ -42,14 +51,14 @@ const sizesCanvas = {
 // Event Listener
 
 window.addEventListener('resize', () => {
-    // Update sizes
-    sizes.width = window.innerWidth;
-    sizes.height = window.innerHeight;
+    // Update size
+    sizesCanvas.width = window.innerWidth;
+    sizesCanvas.height = window.innerHeight;
     // Update camera
-    camera.aspect = sizes.width / sizes.height;
+    camera.aspect = sizesCanvas.width / sizesCanvas.height;
     camera.updateProjectionMatrix();
     // Update renderer
-    renderer.setSize(sizes.width, sizes.height);
+    renderer.setSize(sizesCanvas.width, sizesCanvas.height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     })
     
@@ -61,13 +70,13 @@ let currentIntersect = null
 let mouse = new THREE.Vector2()
 
 window.addEventListener('mousemove', (event) => {
-    mouse.x = event.clientX / sizes.width * 2 - 1
-    mouse.y = - (event.clientY / sizes.height) * 2 + 1
+    mouse.x = event.clientX / sizesCanvas.width * 2 - 1
+    mouse.y = - (event.clientY / sizesCanvas.height) * 2 + 1
 })
 
 // Audio
 const music = new Audio("sounds/christmas.mp3")
-music.volume = 0.3
+music.volume = 0.05
 
 
 // Loaders
@@ -139,7 +148,8 @@ const loadingManager = new THREE.LoadingManager(
 
 const continueAnimation = () => {
   // Music and sounds here
-  music.play()
+  // music.play()
+  
   // Started
   gsap.to(started, 0.5, {
     opacity: 0
@@ -161,8 +171,8 @@ const continueAnimation = () => {
     // Also setting the visibility of the 'groupPlane' and 'groupText' elements to 'visible'.
     loading.style.visibility = "hidden"
     started.style.visibility = "hidden"
-    groupPlane.visible = true
-    groupText.visible = true
+    // groupPlane.visible = true
+    // groupText.visible = true
     // Setting the 'isLoading' variable to true.
     // This is likely a flag used to track whether the scene or application is still loading.
     isLoading = true
@@ -185,7 +195,7 @@ let models = []
 // Loading Santa Model
 // Initialize the GLTFLoader with the loadingManager.
 gltfLoader.load(
-  "models/santa/scene.gltf",
+  "models/santa.glb",
   (gltf) => { // Callback function that is executed once the model has loaded.
     // Set the scale of the model. This uniformly scales the model in all three dimensions.
     gltf.scene.scale.set(5, 5, 5)
@@ -218,7 +228,7 @@ let startTouch = 0
 
 // Load Rock model
 gltfLoader.load(
-    "models/rock/scene.gltf", // Path to the .glb file
+    "models/rock.glb", // Path to the .glb file
     (gltf) => {
         // Scale, position, and rotation settings remain the same as before
         gltf.scene.scale.set(2.5, 2, 2.5)
@@ -368,6 +378,38 @@ const animationScroll = (eventObject, touchEvent, valuse, downOrUp) => {
 }
 }
 
+playerClose.addEventListener("click", () => {
+  playerSource.src = ""
+  music.play()
+  respiration.play()
+
+  gsap.to(player, 0.5, {
+      opacity: 0,
+      ease: Power1.easeIn
+  }) 
+  player.style.visibility = "hidden"
+
+  gsap.to(groupPlane.children[planeClickedIndex].position, 0.5, {
+      x: lastPosition.px,
+      y: lastPosition.py,
+      z: lastPosition.pz,
+      ease: Power1.easeIn
+  }) 
+
+  gsap.to(groupPlane.children[planeClickedIndex].rotation, 0.5, {
+      x: lastPosition.rx,
+      y: lastPosition.ry,
+      z: lastPosition.rz,
+      ease: Power1.easeIn
+  }) 
+
+  planeClickedIndex = -1
+
+  setTimeout(() => {
+      videoLook = false
+  }, 500);
+})
+
 const clock = new THREE.Clock()
 
 let callChangeTouchValue = 0
@@ -380,32 +422,32 @@ const init = () => {
     if(!("ontouchstart" in window)) raycatser.setFromCamera(mouse, camera)
 
     // black and white to colo animation with raycaster
-    if (isLoading) {
-        if (intersects.length === 1) {
-            if (currentIntersect === null) {
-                currentIntersect = intersects[0]
-            } else {
-                for (let i = 0; i < groupPlane.children.length; i++) {
-                    if (groupPlane.children[i] === currentIntersect.object) {
-                        if (callChangeTouchValue === 0) {
-                            touchI = i
-                            changeTouchValue(i)
-                            callChangeTouchValue = 1
-                            document.body.style.cursor = "pointer"               
-                        }
-                    }
-                }
-            }
-        } else {
-            if (callChangeTouchValue === 1 && touchI >= 0) {
-                changeTouchValue(touchI)
-                callChangeTouchValue = 0
-                document.body.style.cursor = "auto" 
-                currentIntersect = null
-                touchI = - 1
-            }
-        }
-    }
+    // if (isLoading) {
+    //     if (intersects.length === 1) {
+    //         if (currentIntersect === null) {
+    //             currentIntersect = intersects[0]
+    //         } else {
+    //             for (let i = 0; i < groupPlane.children.length; i++) {
+    //                 if (groupPlane.children[i] === currentIntersect.object) {
+    //                     if (callChangeTouchValue === 0) {
+    //                         touchI = i
+    //                         changeTouchValue(i)
+    //                         callChangeTouchValue = 1
+    //                         document.body.style.cursor = "pointer"               
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     } else {
+    //         if (callChangeTouchValue === 1 && touchI >= 0) {
+    //             changeTouchValue(touchI)
+    //             callChangeTouchValue = 0
+    //             document.body.style.cursor = "auto" 
+    //             currentIntersect = null
+    //             touchI = - 1
+    //         }
+    //     }
+    // }
 
     // Update renderer
     renderer.render(scene, camera)
