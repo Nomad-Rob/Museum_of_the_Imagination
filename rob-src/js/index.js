@@ -81,7 +81,7 @@ window.addEventListener('mousemove', (event) => {
 })
 
 // Audio
-const music = new Audio("sounds/christmas.mp3")
+const music = new Audio("sounds/party.mp3")
 music.volume = 0.05
 
 
@@ -168,11 +168,11 @@ const continueAnimation = () => {
     opacity: 0
   })
   // Camera Position
-  gsap.to(camera.position, 1.5, {
-    delay: 0.5,
-    x: 4.0,
-    y: 5,
-    z: -10
+  gsap.to(camera.position, 2.5, {
+    delay: 1,
+    x: 3.0,
+    y: 10,
+    z: -15
   })
   //// Setting a timeout to execute the following block of code after a delay of 250 milliseconds.
   setTimeout(() => {
@@ -207,8 +207,9 @@ gltfLoader.load(
   "models/santa.glb",
   (gltf) => {
       // Set the scale of the model.
-      gltf.scene.scale.set(1.5, 1.5, 1.5)
-      gltf.scene.position.y = initialPositionMeshY
+      gltf.scene.scale.set(5, 5, 5)
+      gltf.scene.position.y = initialPositionMeshY -2
+      gltf.scene.position.z = -2.
       gltf.scene.rotation.y = initialRotationMeshY
 
       scene.add(gltf.scene)
@@ -233,11 +234,12 @@ let startTouch = 0
 
 // Load Snow Cabin
 gltfLoader.load(
-  "models/carousel.glb",
+  "models/sleigh.glb",
   (gltf) => {
-      gltf.scene.scale.set(2, 2, 2)
-      gltf.scene.position.y = initialPositionMeshY -14
-      gltf.scene.rotation.y = initialRotationMeshY
+      gltf.scene.scale.set(.05, .05, .05)
+      gltf.scene.position.y = initialPositionMeshY -5
+      gltf.scene.position.x = -.5
+      gltf.scene.rotation.y = initialRotationMeshY - 1.6
 
       scene.add(gltf.scene)
       models.push(gltf.scene)
@@ -303,11 +305,11 @@ window.addEventListener('DOMContentLoaded', () => {
 debugObject.envMapIntensity = 2
   
 // Camera Settings
-
-const camera = new THREE.PerspectiveCamera(75, sizesCanvas.width / sizesCanvas.height, 0.1, 100)
-camera.position.x = 3
-camera.position.y = 4
-camera.position.z = -40
+// (FOV, aspect ratio, near clipping plane, far clipping plane)
+const camera = new THREE.PerspectiveCamera(75, sizesCanvas.width / sizesCanvas.height, 0.1, 200)
+camera.position.x = 
+camera.position.y = 20
+camera.position.z = -30
 scene.add(camera)
 
 // Background camera with orthographic camera
