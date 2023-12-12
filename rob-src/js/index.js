@@ -81,8 +81,8 @@ music.volume = 0.05
 
 // Loaders
 const loadingManager = new THREE.LoadingManager(
-  () => {
-    window.setTimeout(() => {
+  function () {
+    window.setTimeout(function () {
       // Animation to HTML elements
       // Header
       gsap.to(header, 0.5, {
@@ -90,7 +90,7 @@ const loadingManager = new THREE.LoadingManager(
         left: 10,
         transform: "translate(0, 0)",
         ease: Power1.easeIn,
-      })
+      });
       // H1
       gsap.to(h1, 0.5, {
         fontSize: 25,
@@ -99,31 +99,33 @@ const loadingManager = new THREE.LoadingManager(
         transform: "translate(0, 0)",
         width: 150,
         ease: Power1.easeIn,
-      })
+      });
       // Footer
       gsap.to(footer, 0.5, {
         delay: 0.5,
         opacity: 1,
         ease: Power1.easeIn,
-      })
+      });
       // Loading Percentage Counter
       gsap.to(counterLoading, 0.5, {
         delay: 0.5,
         opacity: 0,
         ease: Power1.easeIn,
-      })
+      });
       // Started
       gsap.to(started, 0.5, {
         delay: 0.9,
         opacity: 1,
-      })
+      });
       // Adding an event listener to the 'startedBtn' element.
       // When the button is clicked, it triggers the 'continueAnimation' function.
-      startedBtn.addEventListener('click', () => continueAnimation())
-    // The above line is wrapped inside a setTimeout with a 50ms delay.
-    // This is typically done to ensure that certain actions (like animations or DOM updates)
-    // only happen after the rest of the script has loaded, or to introduce a brief pause.
-    }, 50)
+      startedBtn.addEventListener('click', function () {
+        continueAnimation();
+      });
+      // The above line is wrapped inside a setTimeout with a 50ms delay.
+      // This is typically done to ensure that certain actions (like animations or DOM updates)
+      // only happen after the rest of the script has loaded, or to introduce a brief pause.
+    }, 50);
   },
   // The following is a function defined as part of the loadingManager.
   // It's a progress handler that updates as resources are loaded.
@@ -147,8 +149,9 @@ const loadingManager = new THREE.LoadingManager(
 // Continue Animation Loading
 
 const continueAnimation = () => {
-  // Music and sounds here
-  music.play()
+  // Music and sounds here, continous playing
+  music.loop = true;
+  music.play();
   
   // Started
   gsap.to(started, 0.5, {
@@ -162,8 +165,8 @@ const continueAnimation = () => {
   gsap.to(camera.position, 1.5, {
     delay: 0.5,
     x: 4.0,
-    y: 3.0,
-    z: -8.5
+    y: 5,
+    z: -10
   })
   //// Setting a timeout to execute the following block of code after a delay of 250 milliseconds.
   setTimeout(() => {
@@ -226,8 +229,8 @@ let startTouch = 0
 gltfLoader.load(
   "models/rock.glb",
   (gltf) => {
-      gltf.scene.scale.set(5, 2, 5)
-      gltf.scene.position.y = initialPositionMeshY - 1.
+      gltf.scene.scale.set(8, 8, 8)
+      gltf.scene.position.y = initialPositionMeshY
       gltf.scene.rotation.y = initialRotationMeshY
 
       scene.add(gltf.scene)
@@ -278,9 +281,9 @@ debugObject.envMapIntensity = 2
 // Camera Settings
 
 const camera = new THREE.PerspectiveCamera(75, sizesCanvas.width / sizesCanvas.height, 0.1, 100)
-camera.position.x = 3.5
+camera.position.x = 3
 camera.position.y = 1.5
-camera.position.z = -6
+camera.position.z = -8.5
 scene.add(camera)
 
 // Background camera with orthographic camera
@@ -412,7 +415,7 @@ const init = () => {
     // Upadate raycaster
     if(!("ontouchstart" in window)) raycatser.setFromCamera(mouse, camera)
 
-    // black and white to colo animation with raycaster
+    // // black and white to color animation with raycaster
     // if (isLoading) {
     //     if (intersects.length === 1) {
     //         if (currentIntersect === null) {
