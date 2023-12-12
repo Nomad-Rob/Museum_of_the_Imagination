@@ -15,7 +15,7 @@ const started = document.querySelector(".started")
 const startedBtn = document.querySelector(".started-btn")
 let touchValue = 1
 let videoLook = false
-let scrollI = 0.0
+let scroll = 0.0
 let initialPositionMeshY = -1
 let initialRotationMeshY = Math.PI * 0.9
 let planeClickedIndex = -1
@@ -51,16 +51,22 @@ const sizesCanvas = {
 // Event Listener
 
 window.addEventListener('resize', () => {
-    // Update size
-    sizesCanvas.width = window.innerWidth;
-    sizesCanvas.height = window.innerHeight;
-    // Update camera
-    camera.aspect = sizesCanvas.width / sizesCanvas.height;
-    camera.updateProjectionMatrix();
-    // Update renderer
-    renderer.setSize(sizesCanvas.width, sizesCanvas.height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    })
+  // Update size
+  sizesCanvas.width = window.innerWidth;
+  sizesCanvas.height = window.innerHeight;
+  // Update camera
+  camera.aspect = sizesCanvas.width / sizesCanvas.height;
+  camera.updateProjectionMatrix();
+  // Update backgroundCamera if needed
+  backgroundCamera.left = -sizesCanvas.width / 2;
+  backgroundCamera.right = sizesCanvas.width / 2;
+  backgroundCamera.top = sizesCanvas.height / 2;
+  backgroundCamera.bottom = -sizesCanvas.height / 2;
+  backgroundCamera.updateProjectionMatrix();
+  // Update renderer
+  renderer.setSize(sizesCanvas.width, sizesCanvas.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+})
     
 // Raycaster
 const raycaster = new THREE.Raycaster()
@@ -185,10 +191,10 @@ const continueAnimation = () => {
 // Addiing images to the scene
 const textureLoader = new THREE.TextureLoader(loadingManager)
 
-const imagesLoad1 = textureLoader.load("./images/cozy_room.jpg")
-const imagesLoad2 = textureLoader.load("./images/light_made_tree.jpg")
-const imagesLoad3 = textureLoader.load("./images/lightpost.jpg")
-const imagesLoad4 = textureLoader.load("./images/sleeping_dog.jpg")
+const imagesLoad1 = textureLoader.load("images/cozy_room.jpg")
+const imagesLoad2 = textureLoader.load("images/light_made_tree.jpg")
+const imagesLoad3 = textureLoader.load("images/lightpost.jpg")
+const imagesLoad4 = textureLoader.load("images/sleeping_dog.jpg")
 
 // Create a new GLTFLoader instance, passing the loadingManager to handle loading events.
 const gltfLoader = new GLTFLoader(loadingManager)
@@ -201,7 +207,7 @@ gltfLoader.load(
   "models/santa.glb",
   (gltf) => {
       // Set the scale of the model.
-      gltf.scene.scale.set(2, 2, 2)
+      gltf.scene.scale.set(1.5, 1.5, 1.5)
       gltf.scene.position.y = initialPositionMeshY
       gltf.scene.rotation.y = initialRotationMeshY
 
@@ -225,12 +231,12 @@ gltfLoader.load(
 
 let startTouch = 0
 
-// Load Rock model
+// Load Snow Cabin
 gltfLoader.load(
-  "models/rock.glb",
+  "models/carousel.glb",
   (gltf) => {
-      gltf.scene.scale.set(8, 8, 8)
-      gltf.scene.position.y = initialPositionMeshY
+      gltf.scene.scale.set(2, 2, 2)
+      gltf.scene.position.y = initialPositionMeshY -14
       gltf.scene.rotation.y = initialRotationMeshY
 
       scene.add(gltf.scene)
@@ -271,6 +277,24 @@ gltfLoader.load(
   }
 )
 
+// Initialize the canvas size
+window.addEventListener('DOMContentLoaded', () => {
+  // Update camera
+  camera.aspect = sizesCanvas.width / sizesCanvas.height;
+  camera.updateProjectionMatrix();
+
+  // Update backgroundCamera if needed
+  backgroundCamera.left = -sizesCanvas.width / 2;
+  backgroundCamera.right = sizesCanvas.width / 2;
+  backgroundCamera.top = sizesCanvas.height / 2;
+  backgroundCamera.bottom = -sizesCanvas.height / 2;
+  backgroundCamera.updateProjectionMatrix();
+
+  // Update renderer
+  renderer.setSize(sizesCanvas.width, sizesCanvas.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+});
+
 // Set the environment map intensity to 5 in the debugObject.
 // This value controls the strength of the environment map reflections on materials in the scene.
 // A higher value results in more pronounced reflections, enhancing the visual impact of reflective surfaces.
@@ -282,8 +306,8 @@ debugObject.envMapIntensity = 2
 
 const camera = new THREE.PerspectiveCamera(75, sizesCanvas.width / sizesCanvas.height, 0.1, 100)
 camera.position.x = 3
-camera.position.y = 1.5
-camera.position.z = -8.5
+camera.position.y = 4
+camera.position.z = -40
 scene.add(camera)
 
 // Background camera with orthographic camera
@@ -291,7 +315,7 @@ const backgroundCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, -1, 0)
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
-controls.enabled = false
+controls.enabled = true
 controls.enableZoom = false
 
 // Light
@@ -322,12 +346,12 @@ const animationScroll = (eventObject, touchEvent, valuse, downOrUp) => {
   
   if (videoLook === false && isLoading) {
     // Known up or down
-    if (toucheEvent && downOrUp === "down" && scrollI > 0) scrollI--
-    else if (!toucheEvent && deltaY < 0 && scrollI > 0) scrollI00
+    if (toucheEvent && downOrUp === "down" && scroll > 0) scroll--
+    else if (!toucheEvent && deltaY < 0 && scroll > 0) scroll00
     
-    if (scrollI <= 435 && scrollI >= 0 && models.length === 2) {
-      if (touchEvent && downOrUp === "up") scrollI++
-      else if (!touchEvent && deltaY > 0) scrollI++
+    if (scroll <= 435 && scroll >= 0 && models.length === 2) {
+      if (touchEvent && downOrUp === "up") scroll++
+      else if (!touchEvent && deltaY > 0) scroll++
       const speed = 0.005
       
       
@@ -335,13 +359,13 @@ const animationScroll = (eventObject, touchEvent, valuse, downOrUp) => {
       
       models.forEach((model, index) => {
         // rotation
-        model.rotation.y = (initialRotationMeshY) - scrollI * 0.01355 // End front of camera
+        model.rotation.y = (initialRotationMeshY) - scroll * 0.01355 // End front of camera
     
         // position
-        if (index === 0) model.position.y = (initialPositionMeshY) - scrollI * (speed * 0.8)
-        else if (index === 1) model.position.y = (initialPositionMeshY - 1.73) - scrollI * (speed * 0.8)
+        if (index === 0) model.position.y = (initialPositionMeshY) - scroll * (speed * 0.8)
+        else if (index === 1) model.position.y = (initialPositionMeshY - 1.73) - scroll * (speed * 0.8)
 
-        model.position.z = - scrollI * (speed * 0.75)
+        model.position.z = - scroll * (speed * 0.75)
     })
     
     // Update group of planes
@@ -352,9 +376,9 @@ const animationScroll = (eventObject, touchEvent, valuse, downOrUp) => {
 
       // Planes -------
       // Position
-      plane.position.z = - Math.sin(i + 1 * scrollI * (speed * 10)) * Math.PI
-      plane.position.x = - Math.cos(i + 1 * scrollI * (speed * 10)) * Math.PI
-      plane.position.y = (i - 14.2) + (scrollI * (speed * 10))
+      plane.position.z = - Math.sin(i + 1 * scroll * (speed * 10)) * Math.PI
+      plane.position.x = - Math.cos(i + 1 * scroll * (speed * 10)) * Math.PI
+      plane.position.y = (i - 14.2) + (scroll * (speed * 10))
 
       // Rotation
       plane.lookAt(0, plane.position.y, 0)
@@ -409,46 +433,18 @@ const clock = new THREE.Clock()
 let callChangeTouchValue = 0
 let touchI = - 1
 
+// Initialize the scene
 const init = () => {
-    const elapsedTime = clock.getElapsedTime()
-        
-    // Upadate raycaster
-    if(!("ontouchstart" in window)) raycatser.setFromCamera(mouse, camera)
+  const elapsedTime = clock.getElapsedTime();
 
-    // // black and white to color animation with raycaster
-    // if (isLoading) {
-    //     if (intersects.length === 1) {
-    //         if (currentIntersect === null) {
-    //             currentIntersect = intersects[0]
-    //         } else {
-    //             for (let i = 0; i < groupPlane.children.length; i++) {
-    //                 if (groupPlane.children[i] === currentIntersect.object) {
-    //                     if (callChangeTouchValue === 0) {
-    //                         touchI = i
-    //                         changeTouchValue(i)
-    //                         callChangeTouchValue = 1
-    //                         document.body.style.cursor = "pointer"               
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     } else {
-    //         if (callChangeTouchValue === 1 && touchI >= 0) {
-    //             changeTouchValue(touchI)
-    //             callChangeTouchValue = 0
-    //             document.body.style.cursor = "auto" 
-    //             currentIntersect = null
-    //             touchI = - 1
-    //         }
-    //     }
-    // }
+  // Rest of your code...
 
-    // Update renderer
-    renderer.render(scene, camera)
-    renderer.render(backgroundScene, backgroundCamera)
+  // Update renderer
+  renderer.render(scene, camera);
+  renderer.render(backgroundScene, backgroundCamera);
 
-    // Call this function
-    window.requestAnimationFrame(init)
+  // Call this function
+  window.requestAnimationFrame(init);
 }
 
-init()
+init();

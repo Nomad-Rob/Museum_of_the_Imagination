@@ -15,7 +15,7 @@ const started = document.querySelector(".started")
 const startedBtn = document.querySelector(".started-btn")
 let touchValue = 1
 let videoLook = false
-let scrollI = 0.0
+let scroll = 0.0
 let initialPositionMeshY = -1
 let initialRotationMeshY = Math.PI * 0.9
 let planeClickedIndex = -1
@@ -81,8 +81,8 @@ music.volume = 0.05
 
 // Loaders
 const loadingManager = new THREE.LoadingManager(
-  () => {
-    window.setTimeout(() => {
+  function () {
+    window.setTimeout(function () {
       // Animation to HTML elements
       // Header
       gsap.to(header, 0.5, {
@@ -90,7 +90,7 @@ const loadingManager = new THREE.LoadingManager(
         left: 10,
         transform: "translate(0, 0)",
         ease: Power1.easeIn,
-      })
+      });
       // H1
       gsap.to(h1, 0.5, {
         fontSize: 25,
@@ -99,31 +99,33 @@ const loadingManager = new THREE.LoadingManager(
         transform: "translate(0, 0)",
         width: 150,
         ease: Power1.easeIn,
-      })
+      });
       // Footer
       gsap.to(footer, 0.5, {
         delay: 0.5,
         opacity: 1,
         ease: Power1.easeIn,
-      })
+      });
       // Loading Percentage Counter
       gsap.to(counterLoading, 0.5, {
         delay: 0.5,
         opacity: 0,
         ease: Power1.easeIn,
-      })
+      });
       // Started
       gsap.to(started, 0.5, {
         delay: 0.9,
         opacity: 1,
-      })
+      });
       // Adding an event listener to the 'startedBtn' element.
       // When the button is clicked, it triggers the 'continueAnimation' function.
-      startedBtn.addEventListener('click', () => continueAnimation())
-    // The above line is wrapped inside a setTimeout with a 50ms delay.
-    // This is typically done to ensure that certain actions (like animations or DOM updates)
-    // only happen after the rest of the script has loaded, or to introduce a brief pause.
-    }, 50)
+      startedBtn.addEventListener('click', function () {
+        continueAnimation();
+      });
+      // The above line is wrapped inside a setTimeout with a 50ms delay.
+      // This is typically done to ensure that certain actions (like animations or DOM updates)
+      // only happen after the rest of the script has loaded, or to introduce a brief pause.
+    }, 50);
   },
   // The following is a function defined as part of the loadingManager.
   // It's a progress handler that updates as resources are loaded.
@@ -147,8 +149,9 @@ const loadingManager = new THREE.LoadingManager(
 // Continue Animation Loading
 
 const continueAnimation = () => {
-  // Music and sounds here
-  // music.play()
+  // Music and sounds here, continous playing
+  music.loop = true;
+  music.play();
   
   // Started
   gsap.to(started, 0.5, {
@@ -162,8 +165,8 @@ const continueAnimation = () => {
   gsap.to(camera.position, 1.5, {
     delay: 0.5,
     x: 4.0,
-    y: 3.0,
-    z: -8.5
+    y: 5,
+    z: -10
   })
   //// Setting a timeout to execute the following block of code after a delay of 250 milliseconds.
   setTimeout(() => {
@@ -182,10 +185,10 @@ const continueAnimation = () => {
 // Addiing images to the scene
 const textureLoader = new THREE.TextureLoader(loadingManager)
 
-const imagesLoad1 = textureLoader.load("./images/cozy_room.jpg")
-const imagesLoad2 = textureLoader.load("./images/light_made_tree.jpg")
-const imagesLoad3 = textureLoader.load("./images/lightpost.jpg")
-const imagesLoad4 = textureLoader.load("./images/sleeping_dog.jpg")
+const imagesLoad1 = textureLoader.load("images/cozy_room.jpg")
+const imagesLoad2 = textureLoader.load("images/light_made_tree.jpg")
+const imagesLoad3 = textureLoader.load("images/lightpost.jpg")
+const imagesLoad4 = textureLoader.load("images/sleeping_dog.jpg")
 
 // Create a new GLTFLoader instance, passing the loadingManager to handle loading events.
 const gltfLoader = new GLTFLoader(loadingManager)
@@ -197,7 +200,8 @@ let models = []
 gltfLoader.load(
   "models/santa.glb",
   (gltf) => {
-      gltf.scene.scale.set(5, 5, 5)
+      // Set the scale of the model.
+      gltf.scene.scale.set(2, 2, 2)
       gltf.scene.position.y = initialPositionMeshY
       gltf.scene.rotation.y = initialRotationMeshY
 
@@ -225,8 +229,8 @@ let startTouch = 0
 gltfLoader.load(
   "models/rock.glb",
   (gltf) => {
-      gltf.scene.scale.set(2.5, 2, 2.5)
-      gltf.scene.position.y = initialPositionMeshY - 1.73
+      gltf.scene.scale.set(20, 20, 8)
+      gltf.scene.position.y = initialPositionMeshY - 1
       gltf.scene.rotation.y = initialRotationMeshY
 
       scene.add(gltf.scene)
@@ -277,9 +281,9 @@ debugObject.envMapIntensity = 2
 // Camera Settings
 
 const camera = new THREE.PerspectiveCamera(75, sizesCanvas.width / sizesCanvas.height, 0.1, 100)
-camera.position.x = 0
-camera.position.y = 0
-camera.position.z = - 5
+camera.position.x = 3
+camera.position.y = 1.5
+camera.position.z = -8.5
 scene.add(camera)
 
 // Background camera with orthographic camera
@@ -318,12 +322,12 @@ const animationScroll = (eventObject, touchEvent, valuse, downOrUp) => {
   
   if (videoLook === false && isLoading) {
     // Known up or down
-    if (toucheEvent && downOrUp === "down" && scrollI > 0) scrollI--
-    else if (!toucheEvent && deltaY < 0 && scrollI > 0) scrollI00
+    if (toucheEvent && downOrUp === "down" && scroll > 0) scroll--
+    else if (!toucheEvent && deltaY < 0 && scroll > 0) scroll00
     
-    if (scrollI <= 435 && scrollI >= 0 && models.length === 2) {
-      if (touchEvent && downOrUp === "up") scrollI++
-      else if (!touchEvent && deltaY > 0) scrollI++
+    if (scroll <= 435 && scroll >= 0 && models.length === 2) {
+      if (touchEvent && downOrUp === "up") scroll++
+      else if (!touchEvent && deltaY > 0) scroll++
       const speed = 0.005
       
       
@@ -331,13 +335,13 @@ const animationScroll = (eventObject, touchEvent, valuse, downOrUp) => {
       
       models.forEach((model, index) => {
         // rotation
-        model.rotation.y = (initialRotationMeshY) - scrollI * 0.01355 // End front of camera
+        model.rotation.y = (initialRotationMeshY) - scroll * 0.01355 // End front of camera
     
         // position
-        if (index === 0) model.position.y = (initialPositionMeshY) - scrollI * (speed * 0.8)
-        else if (index === 1) model.position.y = (initialPositionMeshY - 1.73) - scrollI * (speed * 0.8)
+        if (index === 0) model.position.y = (initialPositionMeshY) - scroll * (speed * 0.8)
+        else if (index === 1) model.position.y = (initialPositionMeshY - 1.73) - scroll * (speed * 0.8)
 
-        model.position.z = - scrollI * (speed * 0.75)
+        model.position.z = - scroll * (speed * 0.75)
     })
     
     // Update group of planes
@@ -348,9 +352,9 @@ const animationScroll = (eventObject, touchEvent, valuse, downOrUp) => {
 
       // Planes -------
       // Position
-      plane.position.z = - Math.sin(i + 1 * scrollI * (speed * 10)) * Math.PI
-      plane.position.x = - Math.cos(i + 1 * scrollI * (speed * 10)) * Math.PI
-      plane.position.y = (i - 14.2) + (scrollI * (speed * 10))
+      plane.position.z = - Math.sin(i + 1 * scroll * (speed * 10)) * Math.PI
+      plane.position.x = - Math.cos(i + 1 * scroll * (speed * 10)) * Math.PI
+      plane.position.y = (i - 14.2) + (scroll * (speed * 10))
 
       // Rotation
       plane.lookAt(0, plane.position.y, 0)
@@ -411,7 +415,7 @@ const init = () => {
     // Upadate raycaster
     if(!("ontouchstart" in window)) raycatser.setFromCamera(mouse, camera)
 
-    // black and white to colo animation with raycaster
+    // black and white to color animation with raycaster
     // if (isLoading) {
     //     if (intersects.length === 1) {
     //         if (currentIntersect === null) {
