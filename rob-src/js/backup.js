@@ -3,6 +3,7 @@ import { gsap, Power1 } from 'gsap'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
+
 const player = document.querySelector(".player")
 const playerClose = document.querySelector(".player-close")
 const playerSource = document.querySelector(".player-source")
@@ -51,16 +52,22 @@ const sizesCanvas = {
 // Event Listener
 
 window.addEventListener('resize', () => {
-    // Update size
-    sizesCanvas.width = window.innerWidth;
-    sizesCanvas.height = window.innerHeight;
-    // Update camera
-    camera.aspect = sizesCanvas.width / sizesCanvas.height;
-    camera.updateProjectionMatrix();
-    // Update renderer
-    renderer.setSize(sizesCanvas.width, sizesCanvas.height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    })
+  // Update size
+  sizesCanvas.width = window.innerWidth;
+  sizesCanvas.height = window.innerHeight;
+  // Update camera
+  camera.aspect = sizesCanvas.width / sizesCanvas.height;
+  camera.updateProjectionMatrix();
+  // Update backgroundCamera if needed
+  backgroundCamera.left = -sizesCanvas.width / 2;
+  backgroundCamera.right = sizesCanvas.width / 2;
+  backgroundCamera.top = sizesCanvas.height / 2;
+  backgroundCamera.bottom = -sizesCanvas.height / 2;
+  backgroundCamera.updateProjectionMatrix();
+  // Update renderer
+  renderer.setSize(sizesCanvas.width, sizesCanvas.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+})
     
 // Raycaster
 const raycaster = new THREE.Raycaster()
@@ -75,7 +82,7 @@ window.addEventListener('mousemove', (event) => {
 })
 
 // Audio
-const music = new Audio("sounds/christmas.mp3")
+const music = new Audio("sounds/party.mp3")
 music.volume = 0.05
 
 
@@ -144,6 +151,7 @@ const loadingManager = new THREE.LoadingManager(
     // This creates a visual effect that represents the loading progress.
     header.style.width = `${progressRatio * 550}.toFixed(0)px`
   }
+  
 )
 
 // Continue Animation Loading
@@ -162,11 +170,11 @@ const continueAnimation = () => {
     opacity: 0
   })
   // Camera Position
-  gsap.to(camera.position, 1.5, {
-    delay: 0.5,
-    x: 4.0,
-    y: 5,
-    z: -10
+  gsap.to(camera.position, 2.5, {
+    delay: 1,
+    x: 3.0,
+    y: 10,
+    z: -20
   })
   //// Setting a timeout to execute the following block of code after a delay of 250 milliseconds.
   setTimeout(() => {
@@ -182,13 +190,8 @@ const continueAnimation = () => {
   }, 250);
 }
 
-// Addiing images to the scene
+// Addiing stuff to the scene
 const textureLoader = new THREE.TextureLoader(loadingManager)
-
-const imagesLoad1 = textureLoader.load("images/cozy_room.jpg")
-const imagesLoad2 = textureLoader.load("images/light_made_tree.jpg")
-const imagesLoad3 = textureLoader.load("images/lightpost.jpg")
-const imagesLoad4 = textureLoader.load("images/sleeping_dog.jpg")
 
 // Create a new GLTFLoader instance, passing the loadingManager to handle loading events.
 const gltfLoader = new GLTFLoader(loadingManager)
@@ -201,8 +204,9 @@ gltfLoader.load(
   "models/santa.glb",
   (gltf) => {
       // Set the scale of the model.
-      gltf.scene.scale.set(2, 2, 2)
-      gltf.scene.position.y = initialPositionMeshY
+      gltf.scene.scale.set(5, 5, 5)
+      gltf.scene.position.y = initialPositionMeshY -2
+      gltf.scene.position.z = -2.
       gltf.scene.rotation.y = initialRotationMeshY
 
       scene.add(gltf.scene)
@@ -225,13 +229,14 @@ gltfLoader.load(
 
 let startTouch = 0
 
-// Load Rock model
+// Load Sleigh
 gltfLoader.load(
-  "models/rock.glb",
+  "models/sleigh.glb",
   (gltf) => {
-      gltf.scene.scale.set(20, 20, 8)
-      gltf.scene.position.y = initialPositionMeshY - 1
-      gltf.scene.rotation.y = initialRotationMeshY
+      gltf.scene.scale.set(.05, .05, .05)
+      gltf.scene.position.y = initialPositionMeshY -5
+      gltf.scene.position.x = -.5
+      gltf.scene.rotation.y = initialRotationMeshY - 1.6
 
       scene.add(gltf.scene)
       models.push(gltf.scene)
@@ -244,32 +249,33 @@ gltfLoader.load(
               child.material.needsUpdate = true
           }
       })
-
-      // Event Animation
-      if("ontouchstart" in window) {
-
-          window.addEventListener('touchstart', (e) => {
-              startTouch = e.touches[0].clientY
-          }, false)
-
-          window.addEventListener('touchmove', (e) => {
-              // animationScroll(e)
-              if (e.touches[0].clientY < startTouch) {
-                  startTouch = e.touches[0].clientY
-                  animationScroll(e, true, startTouch, "up")
-              } else {
-                  startTouch = e.touches[0].clientY
-                  animationScroll(e, true, startTouch, "down")
-              }
-          }, false)
-
-       } else window.addEventListener("wheel", (e) => animationScroll(e), false)
   },
   undefined,
   (err) => {
       console.log(err)
   }
 )
+
+const axesHelper = new THREE.AxesHelper( 250 );
+scene.add( axesHelper );
+
+// Initialize the canvas size
+window.addEventListener('DOMContentLoaded', () => {
+  // Update camera
+  camera.aspect = sizesCanvas.width / sizesCanvas.height;
+  camera.updateProjectionMatrix();
+
+  // Update backgroundCamera if needed
+  backgroundCamera.left = -sizesCanvas.width / 2;
+  backgroundCamera.right = sizesCanvas.width / 2;
+  backgroundCamera.top = sizesCanvas.height / 2;
+  backgroundCamera.bottom = -sizesCanvas.height / 2;
+  backgroundCamera.updateProjectionMatrix();
+
+  // Update renderer
+  renderer.setSize(sizesCanvas.width, sizesCanvas.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+});
 
 // Set the environment map intensity to 5 in the debugObject.
 // This value controls the strength of the environment map reflections on materials in the scene.
@@ -279,20 +285,23 @@ gltfLoader.load(
 debugObject.envMapIntensity = 2
   
 // Camera Settings
-
-const camera = new THREE.PerspectiveCamera(75, sizesCanvas.width / sizesCanvas.height, 0.1, 100)
-camera.position.x = 3
-camera.position.y = 1.5
-camera.position.z = -8.5
+// (FOV, aspect ratio, near clipping plane, far clipping plane)
+const camera = new THREE.PerspectiveCamera(90, sizesCanvas.width / sizesCanvas.height, 0.1, 300)
+camera.position.x = 1
+camera.position.y = 20
+camera.position.z = -40
 scene.add(camera)
 
 // Background camera with orthographic camera
 const backgroundCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, -1, 0)
 
 // Controls
-const controls = new OrbitControls(camera, canvas)
-controls.enabled = false
+const controls = new OrbitControls(camera, canvas,)
+controls.enabled = true
 controls.enableZoom = false
+controls.autoRotate = true
+controls.autoRotateSpeed = 0.5
+
 
 // Light
 const ambientLight = new THREE.AmbientLight(0xffffff, 1.5)
@@ -312,66 +321,7 @@ renderer.setSize(sizesCanvas.width, sizesCanvas.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.autoClear = false
 
-
-// Animation
-const animationScroll = (eventObject, touchEvent, valuse, downOrUp) => {
-  let deltaY
-  
-  if (touchEvent) deltaY = value
-  else deltaY = eventObject.deltaY
-  
-  if (videoLook === false && isLoading) {
-    // Known up or down
-    if (toucheEvent && downOrUp === "down" && scroll > 0) scroll--
-    else if (!toucheEvent && deltaY < 0 && scroll > 0) scroll00
-    
-    if (scroll <= 435 && scroll >= 0 && models.length === 2) {
-      if (touchEvent && downOrUp === "up") scroll++
-      else if (!touchEvent && deltaY > 0) scroll++
-      const speed = 0.005
-      
-      
-      // Update Mesh
-      
-      models.forEach((model, index) => {
-        // rotation
-        model.rotation.y = (initialRotationMeshY) - scroll * 0.01355 // End front of camera
-    
-        // position
-        if (index === 0) model.position.y = (initialPositionMeshY) - scroll * (speed * 0.8)
-        else if (index === 1) model.position.y = (initialPositionMeshY - 1.73) - scroll * (speed * 0.8)
-
-        model.position.z = - scroll * (speed * 0.75)
-    })
-    
-    // Update group of planes
-    
-    for (let i = 0; i < groupPlane.children.length; i++) {
-      const plane = groupPlane.children[i]
-      const text = groupText.children[i]
-
-      // Planes -------
-      // Position
-      plane.position.z = - Math.sin(i + 1 * scroll * (speed * 10)) * Math.PI
-      plane.position.x = - Math.cos(i + 1 * scroll * (speed * 10)) * Math.PI
-      plane.position.y = (i - 14.2) + (scroll * (speed * 10))
-
-      // Rotation
-      plane.lookAt(0, plane.position.y, 0)
-
-      // Text -------
-      // Position
-      text.position.z = plane.position.z - 0.5
-      text.position.x = plane.position.x
-      text.position.y = plane.position.y - 0.3
-
-      // Rotation
-      text.lookAt(plane.position.x * 2, plane.position.y - 0.3, plane.position.z * 2)
-  }
-}
-}
-}
-
+// Event listener for closing the player
 playerClose.addEventListener("click", () => {
   playerSource.src = ""
   music.play()
@@ -409,46 +359,18 @@ const clock = new THREE.Clock()
 let callChangeTouchValue = 0
 let touchI = - 1
 
+// Initialize the scene
 const init = () => {
-    const elapsedTime = clock.getElapsedTime()
-        
-    // Upadate raycaster
-    if(!("ontouchstart" in window)) raycatser.setFromCamera(mouse, camera)
+  const elapsedTime = clock.getElapsedTime();
 
-    // black and white to color animation with raycaster
-    // if (isLoading) {
-    //     if (intersects.length === 1) {
-    //         if (currentIntersect === null) {
-    //             currentIntersect = intersects[0]
-    //         } else {
-    //             for (let i = 0; i < groupPlane.children.length; i++) {
-    //                 if (groupPlane.children[i] === currentIntersect.object) {
-    //                     if (callChangeTouchValue === 0) {
-    //                         touchI = i
-    //                         changeTouchValue(i)
-    //                         callChangeTouchValue = 1
-    //                         document.body.style.cursor = "pointer"               
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     } else {
-    //         if (callChangeTouchValue === 1 && touchI >= 0) {
-    //             changeTouchValue(touchI)
-    //             callChangeTouchValue = 0
-    //             document.body.style.cursor = "auto" 
-    //             currentIntersect = null
-    //             touchI = - 1
-    //         }
-    //     }
-    // }
+  // Rest of your code...
 
-    // Update renderer
-    renderer.render(scene, camera)
-    renderer.render(backgroundScene, backgroundCamera)
+  // Update renderer
+  renderer.render(scene, camera);
+  renderer.render(backgroundScene, backgroundCamera);
 
-    // Call this function
-    window.requestAnimationFrame(init)
+  // Call this function
+  window.requestAnimationFrame(init);
 }
 
-init()
+init();
