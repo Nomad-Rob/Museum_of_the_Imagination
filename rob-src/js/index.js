@@ -215,7 +215,7 @@ function onLoadComplete() {
       // Create a plane with the image texture
       const imagePlane = new THREE.Mesh(
         new THREE.PlaneGeometry(10, 10), // Adjust the size as needed
-        new THREE.MeshBasicMaterial({ map: texture })
+        new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
       );
 
       // Set the position of the image
@@ -391,7 +391,7 @@ function continueAnimation() {
 
   // Animate the camera position
   gsap.to(camera.position, {
-      delay: .5,
+      delay: .0,
       x: 0,
       y: 10,
       z: -15,
