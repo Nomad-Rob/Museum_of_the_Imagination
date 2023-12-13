@@ -41,7 +41,7 @@ const canvas = document.querySelector('.main-webgl');
 
 // Main Scene
 const scene = new THREE.Scene();
-scene.background = new THREE.Color('#ff69b4');
+scene.background = new THREE.Color('#333333');
 
 // Background Scene
 const backgroundScene = new THREE.Scene();
@@ -190,7 +190,77 @@ function onLoadComplete() {
   startedBtn.addEventListener('click', () => {
       continueAnimation();
       console.log('startedBtn clicked');
+      
+      fetch('images.json')
+      .then(response => response.json())
+      .then(data => {
+        displayImagesAndText(data);
+      })
   });
+  
+  function displayImagesAndText(data) {
+    // Create a group to hold the images and text
+    const imageGroup = new THREE.Group();
+    scene.add(imageGroup);
+
+    // Define the position for the images and text
+    const imagePosition = new THREE.Vector3(0, 0, -10); // Adjust the Z position as needed
+    const textPosition = new THREE.Vector3(0, -5, -10); // Adjust the Z position as needed
+
+    // Loop through the JSON data and create image and text elements
+    data.forEach(item => {
+      // Load image texture
+      const texture = textureLoader.load(item.imageUrl);
+
+      // Create a plane with the image texture
+      const imagePlane = new THREE.Mesh(
+        new THREE.PlaneGeometry(10, 10), // Adjust the size as needed
+        new THREE.MeshBasicMaterial({ map: texture })
+      );
+
+      // Set the position of the image
+      imagePlane.position.copy(imagePosition);
+      imagePosition.x += 3 * 10; // Increase the horizontal spacing between images by 10 times
+
+      // Create a text sprite
+      const textSprite = createTextSprite(item.text, item.year);
+      textSprite.position.copy(textPosition);
+      textPosition.x += 3 * 10; // Increase the horizontal spacing between text elements by 10 times
+
+      // Add the image and text to the group
+      imageGroup.add(imagePlane);
+      imageGroup.add(textSprite);
+    });
+  }
+
+function createTextSprite(text, year) {
+    // Create a canvas element to generate the text sprite
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.width = 800;
+    canvas.height = 600;
+
+    // Customize the appearance of the text
+    context.font = '20px Arial'; // Adjust font size and style as needed
+    context.fillStyle = 'white'; // Adjust text color as needed
+    context.textAlign = 'center';
+
+    // Draw the text and year on the canvas
+    context.fillText(text, canvas.width / 2, canvas.height / 2 - 20);
+    context.fillText(`Year: ${year}`, canvas.width / 2, canvas.height / 2 + 20);
+
+    // Create a texture from the canvas
+    const texture = new THREE.CanvasTexture(canvas);
+
+    // Create a sprite with the texture
+    const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+    const sprite = new THREE.Sprite(spriteMaterial);
+
+    // Scale the sprite to match the canvas size
+    sprite.scale.set(canvas.width / 100, canvas.height / 100, 1);
+
+    return sprite;
+}
 
   // Setting a timeout to ensure that certain actions only happen after the rest of the script has loaded
   setTimeout(() => {
@@ -213,8 +283,10 @@ function loadModels() {
       (gltf) => {
           gltf.scene.scale.set(5, 5, 5);
           gltf.scene.position.y = initialPositionMeshY - 2;
-          gltf.scene.position.z = -2;
-          gltf.scene.rotation.y = initialRotationMeshY;
+          gltf.scene.position.z = -2.5;
+          gltf.scene.position.x = -1.1;
+          gltf.scene.rotation.x = 0;
+          gltf.scene.rotation.y = initialRotationMeshY + 1;
 
           scene.add(gltf.scene);
           models.push(gltf.scene);
@@ -239,7 +311,7 @@ function loadModels() {
           gltf.scene.scale.set(0.05, 0.05, 0.05);
           gltf.scene.position.y = initialPositionMeshY - 5;
           gltf.scene.position.x = -0.5;
-          gltf.scene.rotation.y = initialRotationMeshY - 1.6;
+          gltf.scene.rotation.y = initialRotationMeshY - .5;
 
           scene.add(gltf.scene);
           models.push(gltf.scene);
@@ -269,16 +341,18 @@ function initializeCanvas() {
 function setupCamera() {
   // Set up and return the main camera
   const camera = new THREE.PerspectiveCamera(90, sizesCanvas.width / sizesCanvas.height, 0.1, 300);
-  camera.position.set(1, 20, -40);
+  camera.position.x = .0;
+  camera.position.y = 10;
+  camera.position.z = -15;
   return camera;
 }
 
 function setupControls() {
   // Set up orbit controls
   controls.enabled = true;
-  controls.enableZoom = false;
+  controls.enableZoom = true;
   controls.autoRotate = true;
-  controls.autoRotateSpeed = 0.5;
+  controls.autoRotateSpeed = 3;
 }
 
 function setupLighting() {
@@ -317,10 +391,10 @@ function continueAnimation() {
 
   // Animate the camera position
   gsap.to(camera.position, {
-      delay: 1,
-      x: 3.0,
+      delay: .5,
+      x: 0,
       y: 10,
-      z: -20,
+      z: -15,
       duration: 2.5
   });
 
