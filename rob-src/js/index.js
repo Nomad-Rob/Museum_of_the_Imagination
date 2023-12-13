@@ -213,7 +213,7 @@ const continueAnimation = () => {
   }, 250);
 }
 
-// Addiing images to the scene
+// Addiing stuff to the scene
 const textureLoader = new THREE.TextureLoader(loadingManager)
 
 // Create a new GLTFLoader instance, passing the loadingManager to handle loading events.
@@ -252,7 +252,7 @@ gltfLoader.load(
 
 let startTouch = 0
 
-// Load Snow Cabin
+// Load Sleigh
 gltfLoader.load(
   "models/sleigh.glb",
   (gltf) => {
@@ -272,26 +272,6 @@ gltfLoader.load(
               child.material.needsUpdate = true
           }
       })
-
-      // Event Animation
-      if("ontouchstart" in window) {
-
-          window.addEventListener('touchstart', (e) => {
-              startTouch = e.touches[0].clientY
-          }, false)
-
-          window.addEventListener('touchmove', (e) => {
-              // animationScroll(e)
-              if (e.touches[0].clientY < startTouch) {
-                  startTouch = e.touches[0].clientY
-                  animationScroll(e, true, startTouch, "up")
-              } else {
-                  startTouch = e.touches[0].clientY
-                  animationScroll(e, true, startTouch, "down")
-              }
-          }, false)
-
-       } else window.addEventListener("wheel", (e) => animationScroll(e), false)
   },
   undefined,
   (err) => {
@@ -338,7 +318,7 @@ const backgroundCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, -1, 0)
 // Controls
 const controls = new OrbitControls(camera, canvas)
 controls.enabled = true
-controls.enableZoom = false
+controls.enableZoom = true
 
 // Light
 const ambientLight = new THREE.AmbientLight(0xffffff, 1.5)
@@ -358,80 +338,7 @@ renderer.setSize(sizesCanvas.width, sizesCanvas.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.autoClear = false
 
-// Load 20 images from the "images" folder
-for (let i = 1; i <= 20; i++) {
-  const imageUrl = `${i}.jpg`;
-  const texture = textureLoader.load(imageUrl);
-  imageTextures.push(texture);
-}
-
-// Animation
-const animationScroll = (eventObject, touchEvent, value, downOrUp) => {
-  let deltaY
-  
-  if (touchEvent) deltaY = value
-  else deltaY = eventObject.deltaY
-  
-  if (videoLook === false && isLoading) {
-    // Known up or down
-    if (toucheEvent && downOrUp === "down" && scroll > 0) scroll--
-    else if (!toucheEvent && deltaY < 0 && scroll > 0) scroll00
-    
-    if (scroll <= 435 && scroll >= 0 && models.length === 2) {
-      if (touchEvent && downOrUp === "up") scroll++
-      else if (!touchEvent && deltaY > 0) scroll++
-      const speed = 0.005
-      
-      
-      // Update Mesh
-      
-      models.forEach((model, index) => {
-        // rotation
-        model.rotation.y = (initialRotationMeshY) - scroll * 0.01355 // End front of camera
-    
-        // position
-        if (index === 0) model.position.y = (initialPositionMeshY) - scroll * (speed * 0.8)
-        else if (index === 1) model.position.y = (initialPositionMeshY - 1.73) - scroll * (speed * 0.8)
-
-        model.position.z = - scroll * (speed * 0.75)
-        
-        const zoomLevel = scroll / 435; // Adjust the denominator as needed
-        const targetZoom = 5; // Adjust the target zoom level as needed
-        const zoom = Math.min(zoomLevel, targetZoom);
-        
-          // Update the camera position to zoom in on Santa
-        camera.position.z = -40 - zoom * 10; // Adjust the values as needed
-        camera.lookAt(0, 0, -10); // Adjust the lookAt position as needed
-    })
-    
-    // Update group of planes
-    
-    for (let i = 0; i < groupPlane.children.length; i++) {
-      const plane = groupPlane.children[i]
-      const text = groupText.children[i]
-
-      // Planes -------
-      // Position
-      plane.position.z = - Math.sin(i + 1 * scroll * (speed * 10)) * Math.PI
-      plane.position.x = - Math.cos(i + 1 * scroll * (speed * 10)) * Math.PI
-      plane.position.y = (i - 14.2) + (scroll * (speed * 10))
-
-      // Rotation
-      plane.lookAt(0, plane.position.y, 0)
-
-      // Text -------
-      // Position
-      text.position.z = plane.position.z - 0.5
-      text.position.x = plane.position.x
-      text.position.y = plane.position.y - 0.3
-
-      // Rotation
-      text.lookAt(plane.position.x * 2, plane.position.y - 0.3, plane.position.z * 2)
-  }
-}
-}
-}
-
+// Event listener for closing the player
 playerClose.addEventListener("click", () => {
   playerSource.src = ""
   music.play()
