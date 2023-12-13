@@ -6,13 +6,14 @@ const scene = new THREE.Scene();
 // scene.background = new THREE.Color('#ffffff');
 
 // Create our sphere
-const geometry = new THREE.SphereGeometry(3, 64, 64);
-const material = new THREE.MeshStandardMaterial({ 
-  color: '#00ff83',
-  roughness: .6
-});
-const mesh = new THREE.Mesh(geometry, material);
-scene.add(mesh);
+// const geometry = new THREE.SphereGeometry(32, 64, 64);
+// const material = new THREE.MeshStandardMaterial({ 
+//   color: '#00ff83',
+//   roughness: .6
+// });
+// const mesh = new THREE.Mesh(geometry, material);
+// mesh.position.set(0, 0, 0);
+// scene.add(mesh);
 
 // Sizes
 const sizes = {
@@ -22,15 +23,21 @@ const sizes = {
 
 // Sphere Lights
 const sphereLight = new THREE.PointLight(0xffffff, .8, 100);
-sphereLight.position.set(0, 10, 10);
-sphereLight.intensity = 1.3
+sphereLight.position.set(0, 100, 10);
+sphereLight.intensity = 3
 scene.add(sphereLight);
 
 
 // Camera
-const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 0.1, 100);
-camera.position.z = 20;
+const camera = new THREE.PerspectiveCamera(60, sizes.width / sizes.height, 0.1, 100);
+camera.position.z = 60;
+camera.position.x = 30;
+camera.position.y = 60;
 scene.add(camera);
+
+// Axis helper
+const axesHelper = new THREE.AxesHelper(300);
+scene.add(axesHelper);
 
 // Renderer
 const canvas = document.querySelector(".webgl");
@@ -39,22 +46,20 @@ renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(2);
 renderer.render(scene, camera);
 
-// Controls
+// Controls, set initally to false when page is loaded
 const controls = new OrbitControls(camera, canvas);
-controls.enableDamping = true;
-controls.enablePan = false;
-controls.enableZoom = false;
-controls.autoRotate = true;
+controls.enabled = false;
 
 // *********************************************************
 // Snowflakes
+const snowScene = new THREE.Scene();
 let particles;
-let positions = [], velocities = []; // snowflake positions(x, y, z) and velocities(x, y, z)
+let positions = [], velocities = []; // snowflake positions(x, y, z) and velocities(x, y, z) 
 
-const numSnowflakes = 33000;
+const numSnowflakes = 160000;
 
 const maxRange = 1000, minRange = maxRange/2; // snowflakes placed from -500 to 500 x & z axes
-const minHeight = 3; // snowflakes placed from 150 to 500 on y axis
+const minHeight = 90; // snowflakes placed from 150 to 500 on y axis
 
 // BufferGeometry stores data as an array with individual attributes (position, color, size, faces, etc)
 const snowGeometry = new THREE.BufferGeometry();
@@ -84,16 +89,16 @@ function addSnowflakes () {
   // console.log(snowflakePNG);
 
   const flakeMaterial = new THREE.PointsMaterial({
-    size: 4,
+    size: 3,
     map: new THREE.TextureLoader().load("/images/snowflake.png"),
     blending: THREE.AdditiveBlending, // makes snowflake vibrant white
     depthTest: false, // do not determine if object is in front of another for performance
     transparent: true, // enable opacity changes
-    opacity: 1,
+    opacity: .7,
   });
 
   particles = new THREE.Points(snowGeometry, flakeMaterial);
-  scene.add(particles);
+  snowScene.add(particles);
 }
 
 // Function updates position of snowflakes
@@ -124,13 +129,50 @@ function animate() {
 
   updateSnowParticles(); //updates position of snowflakes
 
-  renderer.render(scene, camera);
+  renderer.render(snowScene, camera);
 }
  
 addSnowflakes();
 // console.log(snowGeometry);
 animate();
 // *********************************************************
+
+
+// *********************************************************
+// Parallax
+const parallaxCamera = new THREE.OrthographicCamera(
+  window.innerWidth / -2, window.innerWidth / 2,
+  window.innerHeight / 2, window.innerHeight / -2,
+  0.1, 1000
+);
+const parallaxScene = new THREE.Scene();
+const imageLoader = new THREE.ImageLoader();
+
+// Load all assets and create basic materials for them
+const bgMaterial = new THREE.MeshBasicMaterial({ map: imageLoader.load('images/parallax-assets/background.png') });
+const leftMountainBgMaterial = new THREE.MeshBasicMaterial({ map: imageLoader.load('images/parallax-assets/left-mountain-background.png') });
+const leftMountainFgMaterial = new THREE.MeshBasicMaterial({ map: imageLoader.load('images/parallax-assets/left-mountain-foreground.png') });
+const mainMountainMaterial = new THREE.MeshBasicMaterial({ map: imageLoader.load('images/parallax-assets/main-mountain.png') });
+const middleMountainMaterial = new THREE.MeshBasicMaterial({ map: imageLoader.load('images/parallax-assets/middle-mountain.png') });
+const rightMountainBgMaterial = new THREE.MeshBasicMaterial({ map: imageLoader.load('images/parallax-assets/right-mountain-background.png') });
+const rightMountainPreBgMaterial = new THREE.MeshBasicMaterial({ map: imageLoader.load('images/parallax-assets/right-mountain-pre-background.png') });
+const rightMountainPreFgMaterial = new THREE.MeshBasicMaterial({ map: imageLoader.load('images/parallax-assets/right-mountain-pre-forground.png') });
+const rightRockFgMaterial = new THREE.MeshBasicMaterial({ map: imageLoader.load('images/parallax-assets/right-rock-foreground.png') });
+const santaMaterial = new THREE.MeshBasicMaterial({ map: imageLoader.load('images/parallax-assets/santa.png') });
+
+// Background geometry
+const bgGeometry = new THREE.PlaneGeometry(20,20);
+
+// Create meshes from image materials
+const bgMesh = new THREE.Mesh(bgGeometry, bgMaterial);
+
+// Set position for each mesh
+bgMesh.position.set(0, 0, 0);
+
+// Add meshes to scene
+parallaxScene.add(bgMesh);
+// *********************************************************
+
 
 // Resize
 window.addEventListener('resize', () => {
@@ -148,30 +190,14 @@ window.addEventListener('resize', () => {
 const loop = () => {
   controls.update();
   renderer.render(scene,camera);
+  // Render the scene
+  renderer.render(parallaxScene, parallaxCamera);
   window.requestAnimationFrame(loop);
 }
 loop();
 
 // Timeline magic
 const tl = gsap.timeline({defaults: {duration: 1}});
-tl.fromTo(mesh.scale, {z:0, x:0, y:0}, {z:1, x:1, y:1});
+// tl.fromTo(mesh.scale, {z:0, x:0, y:0}, {z:1, x:1, y:1});
 tl.fromTo('nav', {y: "-100%"}, {y: "0%"});
 tl.fromTo('.title', {opacity: 0}, {opacity: 1});
-
-// Mouse animation color
-let mouseDown = false;
-let rgb = []
-window.addEventListener('mousedown', () => (mouseDown = true));
-window.addEventListener('mouseup', () => (mouseDown = false));
-window.addEventListener('mousemove', (e) => {
-  if(mouseDown) {
-    rgb = [
-      Math.round((e.pageX / sizes.width) * 255),
-      Math.round((e.pageY / sizes.height) * 255),
-      150
-    ]
-    // Animate color
-    let newColor = new THREE.Color(`rgb(${rgb.join(",")})`);
-    gsap.to(mesh.material.color, {r: newColor.r, g: newColor.g, b: newColor.b});
-  }
-});
