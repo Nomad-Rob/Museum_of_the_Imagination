@@ -209,6 +209,16 @@ window.addEventListener('resize', () => {
 })
 
 // Timeline magic
-const tl = gsap.timeline({defaults: {duration: 2}});
+const tl = gsap.timeline({defaults: {duration: 1}});
+
+// Add opacity animations for all meshes using fromTo with staggered delays
+tl.fromTo(santaMesh.position, { y: 161 }, { y: 61, delay: 1 });
+tl.fromTo(rightMountainPreBgMesh.position, { x: 236 }, { x: 136, delay: -.5 });
+tl.fromTo(rightRockFgMesh.position, { y: -200 }, { y: -84.8, delay: -.9 });
+tl.fromTo(leftMountainFgMesh.position, { x: -260 }, { x: -98, delay: -.5 });
+tl.fromTo(middleMountainMesh.position, { y: -200 }, { y: -72, delay: -.5 });
+tl.fromTo(rightMountainPreFgMesh.position, { y: -180 }, { y: -49.5, delay: -.5 });
+
+// Title and nav bar animation
 tl.fromTo('nav', {y: "-100%"}, {y: "0%"});
 tl.fromTo('.title-image', {opacity: 0}, {opacity: 1});
