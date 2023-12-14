@@ -21,7 +21,7 @@
     color: white;
     z-index: 2;
     position: relative;
-    padding: 4rem 8rem;
+    padding: 2rem 8rem;
     display: flex;
     justify-content: space-between;
   }
@@ -35,14 +35,19 @@
     list-style: none;
     display: flex;
     gap: 4rem;
+    align-items: center;
   }
   
-  .title {
-    color: white;
+  /* Image styling */
+  .logo-image {
+    width: 90px;
+  }
+
+  .title-image {
     z-index: 2;
     position: absolute;
-    font-size: 3rem;
+    width: 666px;
     left: 50%;
-    top: 75%;
-    transform: translate(-50%, 45%);
+    top: 73%;
+    transform: translate(-50%, 0%);
   }

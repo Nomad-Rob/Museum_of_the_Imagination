@@ -18,6 +18,8 @@ const sizes = {
 // sphereLight.intensity = 300
 // scene.add(sphereLight);
 
+// dat.Gui instantiation
+const gui = new dat.GUI();
 
 // Camera
 const camera = new THREE.PerspectiveCamera(60, sizes.width / sizes.height, 0.1, 600);
@@ -31,7 +33,7 @@ const canvas = document.querySelector(".webgl");
 // Renderer
 const renderer = new THREE.WebGLRenderer({canvas});
 renderer.setSize(sizes.width, sizes.height);
-renderer.setPixelRatio(2);
+renderer.setPixelRatio(3);
 
 // Controls, set initally to false when page is loaded
 const controls = new OrbitControls(camera, canvas);
@@ -128,25 +130,23 @@ const santaMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('im
 const leftMountainBgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/left-mountain-background.png'), transparent: true, side: THREE.DoubleSide });
 const rightMountainBgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/right-mountain-background.png'), transparent: true, side: THREE.DoubleSide });
 const mainMountainMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/main-mountain.png'), transparent: true, side: THREE.DoubleSide });
-// const rightMountainPreBgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/right-mountain-pre-background.png'), transparent: true });
-// const middleMountainMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/middle-mountain.png'), transparent: true });
-// const rightMountainPreFgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/right-mountain-pre-forground.png'), transparent: true });
-// const rightRockFgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/right-rock-foreground.png'), transparent: true });
-// const leftMountainFgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/left-mountain-foreground.png'), transparent: true });
-
-
+const rightMountainPreBgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/right-mountain-pre-background.png'), transparent: true });
+const middleMountainMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/middle-mountain.png'), transparent: true });
+const rightMountainPreFgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/right-mountain-pre-foreground.png'), transparent: true });
+const rightRockFgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/right-rock-foreground.png'), transparent: true });
+const leftMountainFgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/left-mountain-foreground.png'), transparent: true });
 
 // Background geometry
-const bgGeometry = new THREE.PlaneGeometry(380, 214);
-const santaGeometry = new THREE.PlaneGeometry(400, 95);
-const leftMountainBgGeometry = new THREE.PlaneGeometry(130, 59);
-const rightMountainBgGeometry = new THREE.PlaneGeometry(130, 59);
-const mainMountainGeometry = new THREE.PlaneGeometry(360, 200);
-// const rightMountainPreBgGeometry = new THREE.PlaneGeometry(400, 265);
-// const middleMountainGeometry = new THREE.PlaneGeometry(400, 265);
-// const rightMountainPreFgGeometry = new THREE.PlaneGeometry(400, 265);
-// const rightRockFgGeometry = new THREE.PlaneGeometry(400, 265);
-// const leftMountainFgGeometry = new THREE.PlaneGeometry(400, 265);
+const bgGeometry = new THREE.PlaneGeometry(476, 288);
+const santaGeometry = new THREE.PlaneGeometry(476, 113);
+const leftMountainBgGeometry = new THREE.PlaneGeometry(205, 93);
+const rightMountainBgGeometry = new THREE.PlaneGeometry(194, 89);
+const mainMountainGeometry = new THREE.PlaneGeometry(411, 229);
+const rightMountainPreBgGeometry = new THREE.PlaneGeometry(184, 148);
+const middleMountainGeometry = new THREE.PlaneGeometry(146, 123);
+const rightMountainPreFgGeometry = new THREE.PlaneGeometry(156, 143);
+const rightRockFgGeometry = new THREE.PlaneGeometry(135, 35);
+const leftMountainFgGeometry = new THREE.PlaneGeometry(211, 154);
 
 // Create meshes from image materials
 const bgMesh = new THREE.Mesh(bgGeometry, bgMaterial);
@@ -154,31 +154,32 @@ const santaMesh = new THREE.Mesh(santaGeometry, santaMaterial);
 const leftMountainBgMesh = new THREE.Mesh(leftMountainBgGeometry, leftMountainBgMaterial);
 const rightMountainBgMesh = new THREE.Mesh(rightMountainBgGeometry, rightMountainBgMaterial);
 const mainMountainMesh = new THREE.Mesh(mainMountainGeometry, mainMountainMaterial);
-// const rightMountainPreBgMesh = new THREE.Mesh(rightMountainPreBgGeometry, rightMountainPreBgMaterial);
-// const middleMountainMesh = new THREE.Mesh(middleMountainGeometry, middleMountainMaterial);
-// const rightMountainPreFgMesh = new THREE.Mesh(rightMountainPreFgGeometry, rightMountainPreFgMaterial);
-// const rightRockFgMesh = new THREE.Mesh(rightRockFgGeometry, rightRockFgMaterial);
-// const leftMountainFgMesh = new THREE.Mesh(leftMountainFgGeometry, leftMountainFgMaterial);
+const rightMountainPreBgMesh = new THREE.Mesh(rightMountainPreBgGeometry, rightMountainPreBgMaterial);
+const middleMountainMesh = new THREE.Mesh(middleMountainGeometry, middleMountainMaterial);
+const rightMountainPreFgMesh = new THREE.Mesh(rightMountainPreFgGeometry, rightMountainPreFgMaterial);
+const rightRockFgMesh = new THREE.Mesh(rightRockFgGeometry, rightRockFgMaterial);
+const leftMountainFgMesh = new THREE.Mesh(leftMountainFgGeometry, leftMountainFgMaterial);
 
 // Set position for each mesh
-bgMesh.position.set(0, 0, 0);
-santaMesh.position.set(-5, 60, 1);
-leftMountainBgMesh.position.set(-130, 0, 2);
-rightMountainBgMesh.position.set(130, 0, 2);
-mainMountainMesh.position.set(10, -5, 3);
-// console.log(bgMesh);
+bgMesh.position.set(0, 0, -40);
+santaMesh.position.set(-5.4, 61, -30);
+leftMountainBgMesh.position.set(-133, -14.2, -36);
+rightMountainBgMesh.position.set(162, -20, -36);
+mainMountainMesh.position.set(21, -18.6, -30);
+rightMountainPreBgMesh.position.set(136, -50, -24);
+middleMountainMesh.position.set(39, -72, -18);
+rightMountainPreFgMesh.position.set(136, -49.5, -12);
+rightRockFgMesh.position.set(127, -84.8, -6);
+leftMountainFgMesh.position.set(-98, -53.9, -6);
+console.log(bgMesh);
 
 // Add meshes to scene
-snowScene.add(bgMesh, santaMesh, leftMountainBgMesh, rightMountainBgMesh, mainMountainMesh);
-// snowScene.add(bgMesh, santaMesh, leftMountainBgMesh, rightMountainBgMesh, mainMountainMesh, rightMountainPreBgMesh, middleMountainMesh, rightMountainPreFgMesh, rightRockFgMesh, leftMountainFgMesh);
+snowScene.add(bgMesh, santaMesh, leftMountainBgMesh, rightMountainBgMesh, mainMountainMesh, rightMountainPreBgMesh, middleMountainMesh, rightMountainPreFgMesh, rightRockFgMesh, leftMountainFgMesh);
 // *********************************************************
 
 // Axis helper
 const axesHelper = new THREE.AxesHelper(300);
 snowScene.add(axesHelper);
-
-// dat.GUI
-const gui = new dat.GUI();
 
 // Calling loops 
 function animate() {
@@ -190,6 +191,7 @@ function animate() {
   // Render snow scene
   renderer.render(snowScene, camera);
   
+  controls.update();
 }
 animate();
 // parallaxLoop();
@@ -207,6 +209,6 @@ window.addEventListener('resize', () => {
 })
 
 // Timeline magic
-const tl = gsap.timeline({defaults: {duration: 1}});
+const tl = gsap.timeline({defaults: {duration: 2}});
 tl.fromTo('nav', {y: "-100%"}, {y: "0%"});
-tl.fromTo('.title', {opacity: 0}, {opacity: 1});
+tl.fromTo('.title-image', {opacity: 0}, {opacity: 1});
