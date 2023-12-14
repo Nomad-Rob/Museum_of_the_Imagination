@@ -124,9 +124,10 @@ function onWindowResize() {
   sizesCanvas.width = window.innerWidth;
   sizesCanvas.height = window.innerHeight;
 
+  // Update camera aspect ratio
   camera.aspect = sizesCanvas.width / sizesCanvas.height;
   camera.updateProjectionMatrix();
-
+  // Update background camera aspect ratio
   backgroundCamera.left = -sizesCanvas.width / 2;
   backgroundCamera.right = sizesCanvas.width / 2;
   backgroundCamera.top = sizesCanvas.height / 2;
@@ -282,11 +283,12 @@ function loadModels() {
       "models/santa.glb",
       (gltf) => {
           gltf.scene.scale.set(5, 5, 5);
-          gltf.scene.position.y = initialPositionMeshY - 2;
-          gltf.scene.position.z = -2.5;
-          gltf.scene.position.x = -1.1;
+          // gltf.scene.position.y = initialPositionMeshY 0;
+          gltf.scene.position.z = 0;
+          gltf.scene.position.y = -5;
+          gltf.scene.position.x = 0;
           gltf.scene.rotation.x = 0;
-          gltf.scene.rotation.y = initialRotationMeshY + 1;
+          // gltf.scene.rotation.y = initialRotationMeshY 0;
 
           scene.add(gltf.scene);
           models.push(gltf.scene);
@@ -309,9 +311,13 @@ function loadModels() {
       "models/sleigh.glb",
       (gltf) => {
           gltf.scene.scale.set(0.05, 0.05, 0.05);
-          gltf.scene.position.y = initialPositionMeshY - 5;
-          gltf.scene.position.x = -0.5;
-          gltf.scene.rotation.y = initialRotationMeshY - .5;
+          gltf.scene.position.y = -7.8;
+          // gltf.scene.position.y = initialPositionMeshY 0;
+          gltf.scene.position.x = 0;
+          gltf.scene.position.z = -1.8;
+          gltf.scene.rotation.y = -1.6;
+          
+          // gltf.scene.rotation.y = initialRotationMeshY 0;
 
           scene.add(gltf.scene);
           models.push(gltf.scene);
@@ -340,10 +346,11 @@ function initializeCanvas() {
 
 function setupCamera() {
   // Set up and return the main camera
-  const camera = new THREE.PerspectiveCamera(90, sizesCanvas.width / sizesCanvas.height, 0.1, 300);
-  camera.position.x = .0;
-  camera.position.y = 10;
-  camera.position.z = -15;
+  const camera = new THREE.PerspectiveCamera(80, sizesCanvas.width / sizesCanvas.height, 0.1, 250);
+  camera.name = 'Main Camera';
+  camera.position.x = 0;
+  camera.position.y = 5;
+  camera.position.z = 30;
   return camera;
 }
 
@@ -351,8 +358,7 @@ function setupControls() {
   // Set up orbit controls
   controls.enabled = true;
   controls.enableZoom = true;
-  controls.autoRotate = true;
-  controls.autoRotateSpeed = 3;
+  controls.scrollSpeed = 0.5;
 }
 
 function setupLighting() {
@@ -361,7 +367,7 @@ function setupLighting() {
   scene.add(ambientLight);
 
   const pointLight = new THREE.PointLight(0xffffff, 15);
-  pointLight.position.set(-5.5, 5.5, -5);
+  pointLight.position.set(0,0,0);
   scene.add(pointLight);
 }
 
@@ -391,11 +397,11 @@ function continueAnimation() {
 
   // Animate the camera position
   gsap.to(camera.position, {
-      delay: .0,
+      delay: 1,
       x: 0,
-      y: 10,
-      z: -15,
-      duration: 2.5
+      y: 5,
+      z: 18,
+      duration: 1
   });
 
   // Set a timeout to execute the following block of code after a delay of 250 milliseconds
