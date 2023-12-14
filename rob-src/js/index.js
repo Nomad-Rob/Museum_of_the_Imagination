@@ -32,6 +32,11 @@ let lastPosition = {
     ry: null,
     rz: null
 };
+let cameraZPosition = 18;
+let santaRotation = 0;
+let sleighRotation = 0;
+let imageIndex = 0;
+let revealSpeed = 0.1; // Adjust the speed of image reveal
 
 // Debug object for future enhancements
 const debugObject = {};
@@ -55,16 +60,19 @@ const sizesCanvas = {
 // Event Listener for window resize
 window.addEventListener('resize', onWindowResize);
 
+
 // Raycaster for interaction
 const raycaster = new THREE.Raycaster();
 let currentIntersect = null;
+
+
 
 // Mouse move tracking
 let mouse = new THREE.Vector2();
 window.addEventListener('mousemove', onMouseMove);
 
 // Audio setup
-const music = new Audio('sounds/party.mp3');
+const music = new Audio('sounds/christmas.mp3');
 music.volume = 0.05;
 
 // Loaders setup
@@ -198,69 +206,137 @@ function onLoadComplete() {
         displayImagesAndText(data);
       })
   });
-  
+
   function displayImagesAndText(data) {
     // Create a group to hold the images and text
     const imageGroup = new THREE.Group();
     scene.add(imageGroup);
-
-    // Define the position for the images and text
-    const imagePosition = new THREE.Vector3(0, 0, -10); // Adjust the Z position as needed
-    const textPosition = new THREE.Vector3(0, -5, -10); // Adjust the Z position as needed
-
-    // Loop through the JSON data and create image and text elements
-    data.forEach(item => {
+  
+    const numImages = data.length;
+    const radius = 50; // Adjust the radius for spacing between images
+    const angleIncrement = (2 * Math.PI) / numImages;
+  
+    // Get the position of the santa.glb model
+    const santaPosition = models[0].position;
+  
+    data.forEach((item, index) => {
+      // Calculate the position of the image based on polar coordinates
+      const angle = angleIncrement * index;
+      const imageX = santaPosition.x + radius * Math.cos(angle);
+      const imageY = santaPosition.y + 10; // Raise the images by 10 units on the Y-axis
+      const imageZ = santaPosition.z + radius * Math.sin(angle);
+  
       // Load image texture
       const texture = textureLoader.load(item.imageUrl);
-
+  
       // Create a plane with the image texture
       const imagePlane = new THREE.Mesh(
         new THREE.PlaneGeometry(10, 10), // Adjust the size as needed
         new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
       );
-
+  
       // Set the position of the image
-      imagePlane.position.copy(imagePosition);
-      imagePosition.x += 3 * 10; // Increase the horizontal spacing between images by 10 times
-
+      imagePlane.position.set(imageX, imageY, imageZ);
+  
+      // Calculate the rotation to face the center
+      const angleToCenter = Math.atan2(
+        santaPosition.x - imageX,
+        santaPosition.z - imageZ
+      );
+      imagePlane.rotation.y = angleToCenter;
+  
       // Create a text sprite
       const textSprite = createTextSprite(item.text, item.year);
-      textSprite.position.copy(textPosition);
-      textPosition.x += 3 * 10; // Increase the horizontal spacing between text elements by 10 times
-
+      // Adjust the Y position of the text to bring it closer to the center
+      const textY = santaPosition.y + 8; // Adjust this value as needed
+      const textX = santaPosition.x + (radius - 5) * Math.cos(angle); // Adjust the radius for text
+      const textZ = santaPosition.z + (radius - 5) * Math.sin(angle); // Adjust the radius for text
+      textSprite.position.set(textX, textY, textZ);
+      textSprite.rotation.y = angleToCenter;
+  
       // Add the image and text to the group
       imageGroup.add(imagePlane);
       imageGroup.add(textSprite);
     });
   }
+  
 
 function createTextSprite(text, year) {
-    // Create a canvas element to generate the text sprite
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    canvas.width = 800;
-    canvas.height = 600;
+  // Create a canvas element to generate the text sprite
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  canvas.width = 800;
+  canvas.height = 600;
 
-    // Customize the appearance of the text
-    context.font = '20px Arial'; // Adjust font size and style as needed
-    context.fillStyle = 'white'; // Adjust text color as needed
-    context.textAlign = 'center';
+  // Customize the appearance of the text
+  context.font = '60px Arial'; // Adjust font size and style as needed
+  context.fillStyle = 'white'; // Adjust text color as needed
+  context.textAlign = 'center';
 
-    // Draw the text and year on the canvas
-    context.fillText(text, canvas.width / 2, canvas.height / 2 - 20);
-    context.fillText(`Year: ${year}`, canvas.width / 2, canvas.height / 2 + 20);
+  // Split the text into words
+  const words = text.split(' ');
 
-    // Create a texture from the canvas
-    const texture = new THREE.CanvasTexture(canvas);
+  // Calculate the maximum number of words that can fit in a line
+  const maxWordsPerLine = 5; // Adjust as needed
 
-    // Create a sprite with the texture
-    const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
-    const sprite = new THREE.Sprite(spriteMaterial);
+  // Calculate the maximum number of lines that can fit in the canvas
+  const maxLines = 2; // Adjust as needed
 
-    // Scale the sprite to match the canvas size
-    sprite.scale.set(canvas.width / 100, canvas.height / 100, 1);
+  // Calculate the maximum number of words that can fit in the text sprite
+  const maxWords = maxWordsPerLine * maxLines;
 
-    return sprite;
+  // Create an array to store the lines of text
+  const lines = [];
+
+  // Iterate through the words and create lines of text
+  let currentLine = '';
+  for (let i = 0; i < words.length; i++) {
+    const word = words[i];
+    const testLine = currentLine + word + ' ';
+    const metrics = context.measureText(testLine);
+    const lineWidth = metrics.width;
+
+    if (lineWidth > canvas.width && i > 0) {
+      lines.push(currentLine);
+      currentLine = word + ' ';
+    } else {
+      currentLine = testLine;
+    }
+
+    if (lines.length >= maxLines) {
+      break;
+    }
+  }
+
+  // Push the remaining words as the last line
+  lines.push(currentLine);
+
+  // Draw the lines of text on the canvas
+  const lineHeight = 60; // Adjust line height as needed
+  const startY = (canvas.height - (lines.length * lineHeight)) / 2;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const y = startY + (i * lineHeight);
+    context.fillText(line, canvas.width / 2, y);
+  }
+
+  // Draw the year underneath the text
+  context.font = '40px Arial'; // Adjust font size and style as needed
+  const yearLineHeight = 40; // Adjust line height for the year
+  const yearY = startY + (lines.length * lineHeight) + yearLineHeight; // Adjust the vertical position of the year
+  context.fillText(year, canvas.width / 2, yearY);
+
+  // Create a texture from the canvas
+  const texture = new THREE.CanvasTexture(canvas);
+
+  // Create a sprite with the texture
+  const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+  const sprite = new THREE.Sprite(spriteMaterial);
+
+  // Scale the sprite to match the canvas size
+  sprite.scale.set(canvas.width / 100, (canvas.height + 100) / 100, 1);
+
+  return sprite;
 }
 
   // Setting a timeout to ensure that certain actions only happen after the rest of the script has loaded
@@ -288,7 +364,7 @@ function loadModels() {
           gltf.scene.position.y = -5;
           gltf.scene.position.x = 0;
           gltf.scene.rotation.x = 0;
-          // gltf.scene.rotation.y = initialRotationMeshY 0;
+          // gltf.scene.rotation.y = initialRotationMeshY 0
 
           scene.add(gltf.scene);
           models.push(gltf.scene);
@@ -328,6 +404,8 @@ function loadModels() {
       }
   );
 }
+
+
 
 function initializeCanvas() {
   // Initialize the canvas size and camera settings
@@ -395,7 +473,7 @@ function continueAnimation() {
       duration: 0.5
   });
 
-  // Animate the camera position
+  // Animate the camera position after
   gsap.to(camera.position, {
       delay: 1,
       x: 0,
@@ -403,6 +481,15 @@ function continueAnimation() {
       z: 18,
       duration: 1
   });
+  
+  setTimeout(() => {
+    loading.style.visibility = "hidden"
+    started.style.visibility = "hidden"
+    groupPlane.visible = true
+    groupText.visible = true
+    isLoading = true
+}, 250);
+  
 
   // Set a timeout to execute the following block of code after a delay of 250 milliseconds
   setTimeout(() => {
@@ -418,6 +505,8 @@ function continueAnimation() {
       isLoading = true;
   }, 250);
 }
+
+
 
 
 function onClosePlayer() {
