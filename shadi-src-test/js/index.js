@@ -136,8 +136,6 @@ const rightMountainPreFgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLo
 const rightRockFgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/right-rock-foreground.png'), transparent: true });
 const leftMountainFgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/left-mountain-foreground.png'), transparent: true });
 
-
-
 // Background geometry
 const bgGeometry = new THREE.PlaneGeometry(476, 288);
 const santaGeometry = new THREE.PlaneGeometry(476, 113);
@@ -211,6 +209,6 @@ window.addEventListener('resize', () => {
 })
 
 // Timeline magic
-const tl = gsap.timeline({defaults: {duration: 1}});
+const tl = gsap.timeline({defaults: {duration: 2}});
 tl.fromTo('nav', {y: "-100%"}, {y: "0%"});
-tl.fromTo('.title', {opacity: 0}, {opacity: 1});
+tl.fromTo('.title-image', {opacity: 0}, {opacity: 1});
