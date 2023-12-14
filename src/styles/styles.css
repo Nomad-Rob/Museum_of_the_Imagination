@@ -19,8 +19,8 @@
   
   nav {
     color: white;
-    z-index: 2;
-    position: relative;
+    z-index: 100;
+    position: absolute;
     padding: 4rem 8rem;
     display: flex;
     justify-content: space-between;
@@ -39,10 +39,12 @@
   
   .title {
     color: white;
-    z-index: 2;
+    z-index: 100;
     position: absolute;
     font-size: 3rem;
     left: 50%;
     top: 75%;
     transform: translate(-50%, 45%);
   }
+
+  /* Parallax images */

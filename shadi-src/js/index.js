@@ -1,18 +1,10 @@
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import gsap from 'gsap';
+import * as dat from 'dat.gui';
 
 // Scene
 const scene = new THREE.Scene();
 // scene.background = new THREE.Color('#ffffff');
-
-// Create our sphere
-const geometry = new THREE.SphereGeometry(3, 64, 64);
-const material = new THREE.MeshStandardMaterial({ 
-  color: '#00ff83',
-  roughness: .6
-});
-const mesh = new THREE.Mesh(geometry, material);
-scene.add(mesh);
 
 // Sizes
 const sizes = {
@@ -21,40 +13,41 @@ const sizes = {
 }
 
 // Sphere Lights
-const sphereLight = new THREE.PointLight(0xffffff, .8, 100);
-sphereLight.position.set(0, 10, 10);
-sphereLight.intensity = 1.3
-scene.add(sphereLight);
+// const sphereLight = new THREE.PointLight(0xffffff, .8, 100);
+// sphereLight.position.set(0, 100, 10);
+// sphereLight.intensity = 300
+// scene.add(sphereLight);
 
 
 // Camera
-const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 0.1, 100);
-camera.position.z = 20;
+const camera = new THREE.PerspectiveCamera(60, sizes.width / sizes.height, 0.1, 600);
+camera.position.z = 160;
+// camera.lookAt(0, 83, 0);
 scene.add(camera);
 
-// Renderer
+// Import canvas
 const canvas = document.querySelector(".webgl");
+
+// Renderer
 const renderer = new THREE.WebGLRenderer({canvas});
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(2);
-renderer.render(scene, camera);
 
-// Controls
+// Controls, set initally to false when page is loaded
 const controls = new OrbitControls(camera, canvas);
-controls.enableDamping = true;
-controls.enablePan = false;
-controls.enableZoom = false;
-controls.autoRotate = true;
+controls.enabled = false;
+
 
 // *********************************************************
 // Snowflakes
+const snowScene = new THREE.Scene();
 let particles;
-let positions = [], velocities = []; // snowflake positions(x, y, z) and velocities(x, y, z)
+let positions = [], velocities = []; // snowflake positions(x, y, z) and velocities(x, y, z) 
 
-const numSnowflakes = 33000;
+const numSnowflakes = 45000;
 
 const maxRange = 1000, minRange = maxRange/2; // snowflakes placed from -500 to 500 x & z axes
-const minHeight = 3; // snowflakes placed from 150 to 500 on y axis
+const minHeight = 150; // snowflakes placed from 150 to 500 on y axis
 
 // BufferGeometry stores data as an array with individual attributes (position, color, size, faces, etc)
 const snowGeometry = new THREE.BufferGeometry();
@@ -84,16 +77,16 @@ function addSnowflakes () {
   // console.log(snowflakePNG);
 
   const flakeMaterial = new THREE.PointsMaterial({
-    size: 4,
+    size: 3,
     map: new THREE.TextureLoader().load("/images/snowflake.png"),
     blending: THREE.AdditiveBlending, // makes snowflake vibrant white
     depthTest: false, // do not determine if object is in front of another for performance
     transparent: true, // enable opacity changes
-    opacity: 1,
+    opacity: .7,
   });
 
   particles = new THREE.Points(snowGeometry, flakeMaterial);
-  scene.add(particles);
+  snowScene.add(particles);
 }
 
 // Function updates position of snowflakes
@@ -108,7 +101,7 @@ function updateSnowParticles() {
     snowGeometry.attributes.position.array[i+2] -= snowGeometry.attributes.velocity.array[i+2];
     
     // check to see if snowflake is off screen, if so, move to new starting position
-    if (snowGeometry.attributes.position.array[i+1] < 0) {
+    if (snowGeometry.attributes.position.array[i+1] < -160) {
       snowGeometry.attributes.position.array[i] = Math.floor(Math.random() * maxRange - minRange); // x
       snowGeometry.attributes.position.array[i+1] = Math.floor(Math.random() * minRange + minHeight); // y
       snowGeometry.attributes.position.array[i+2] = Math.floor(Math.random() * maxRange - minRange); // z
@@ -117,20 +110,89 @@ function updateSnowParticles() {
   // since attribute changes, needs to be present for gpu to update position of array of particles
   snowGeometry.attributes.position.needsUpdate = true;
 }
-
-// Function animates paritcles
-function animate() {
-  requestAnimationFrame(animate);
-
-  updateSnowParticles(); //updates position of snowflakes
-
-  renderer.render(scene, camera);
-}
  
 addSnowflakes();
 // console.log(snowGeometry);
-animate();
 // *********************************************************
+
+
+// *********************************************************
+// Parallax
+
+// Loader for images
+const parallaxLoader = new THREE.TextureLoader();
+
+// Load all assets and create basic materials for them
+const bgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/background.png') });
+const santaMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/santa.png'), transparent: true, side: THREE.DoubleSide });
+const leftMountainBgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/left-mountain-background.png'), transparent: true, side: THREE.DoubleSide });
+const rightMountainBgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/right-mountain-background.png'), transparent: true, side: THREE.DoubleSide });
+const mainMountainMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/main-mountain.png'), transparent: true, side: THREE.DoubleSide });
+// const rightMountainPreBgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/right-mountain-pre-background.png'), transparent: true });
+// const middleMountainMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/middle-mountain.png'), transparent: true });
+// const rightMountainPreFgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/right-mountain-pre-forground.png'), transparent: true });
+// const rightRockFgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/right-rock-foreground.png'), transparent: true });
+// const leftMountainFgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/left-mountain-foreground.png'), transparent: true });
+
+
+
+// Background geometry
+const bgGeometry = new THREE.PlaneGeometry(380, 214);
+const santaGeometry = new THREE.PlaneGeometry(400, 95);
+const leftMountainBgGeometry = new THREE.PlaneGeometry(130, 59);
+const rightMountainBgGeometry = new THREE.PlaneGeometry(130, 59);
+const mainMountainGeometry = new THREE.PlaneGeometry(360, 200);
+// const rightMountainPreBgGeometry = new THREE.PlaneGeometry(400, 265);
+// const middleMountainGeometry = new THREE.PlaneGeometry(400, 265);
+// const rightMountainPreFgGeometry = new THREE.PlaneGeometry(400, 265);
+// const rightRockFgGeometry = new THREE.PlaneGeometry(400, 265);
+// const leftMountainFgGeometry = new THREE.PlaneGeometry(400, 265);
+
+// Create meshes from image materials
+const bgMesh = new THREE.Mesh(bgGeometry, bgMaterial);
+const santaMesh = new THREE.Mesh(santaGeometry, santaMaterial);
+const leftMountainBgMesh = new THREE.Mesh(leftMountainBgGeometry, leftMountainBgMaterial);
+const rightMountainBgMesh = new THREE.Mesh(rightMountainBgGeometry, rightMountainBgMaterial);
+const mainMountainMesh = new THREE.Mesh(mainMountainGeometry, mainMountainMaterial);
+// const rightMountainPreBgMesh = new THREE.Mesh(rightMountainPreBgGeometry, rightMountainPreBgMaterial);
+// const middleMountainMesh = new THREE.Mesh(middleMountainGeometry, middleMountainMaterial);
+// const rightMountainPreFgMesh = new THREE.Mesh(rightMountainPreFgGeometry, rightMountainPreFgMaterial);
+// const rightRockFgMesh = new THREE.Mesh(rightRockFgGeometry, rightRockFgMaterial);
+// const leftMountainFgMesh = new THREE.Mesh(leftMountainFgGeometry, leftMountainFgMaterial);
+
+// Set position for each mesh
+bgMesh.position.set(0, 0, 0);
+santaMesh.position.set(-5, 60, 1);
+leftMountainBgMesh.position.set(-130, 0, 2);
+rightMountainBgMesh.position.set(130, 0, 2);
+mainMountainMesh.position.set(10, -5, 3);
+// console.log(bgMesh);
+
+// Add meshes to scene
+snowScene.add(bgMesh, santaMesh, leftMountainBgMesh, rightMountainBgMesh, mainMountainMesh);
+// snowScene.add(bgMesh, santaMesh, leftMountainBgMesh, rightMountainBgMesh, mainMountainMesh, rightMountainPreBgMesh, middleMountainMesh, rightMountainPreFgMesh, rightRockFgMesh, leftMountainFgMesh);
+// *********************************************************
+
+// Axis helper
+const axesHelper = new THREE.AxesHelper(300);
+snowScene.add(axesHelper);
+
+// dat.GUI
+const gui = new dat.GUI();
+
+// Calling loops 
+function animate() {
+  requestAnimationFrame(animate);
+
+  // Update snow particles
+  updateSnowParticles();
+
+  // Render snow scene
+  renderer.render(snowScene, camera);
+  
+}
+animate();
+// parallaxLoop();
 
 // Resize
 window.addEventListener('resize', () => {
@@ -144,34 +206,7 @@ window.addEventListener('resize', () => {
   renderer.setSize(sizes.width, sizes.height);
 })
 
-// Re-render sphere for resizing
-const loop = () => {
-  controls.update();
-  renderer.render(scene,camera);
-  window.requestAnimationFrame(loop);
-}
-loop();
-
 // Timeline magic
 const tl = gsap.timeline({defaults: {duration: 1}});
-tl.fromTo(mesh.scale, {z:0, x:0, y:0}, {z:1, x:1, y:1});
 tl.fromTo('nav', {y: "-100%"}, {y: "0%"});
 tl.fromTo('.title', {opacity: 0}, {opacity: 1});
-
-// Mouse animation color
-let mouseDown = false;
-let rgb = []
-window.addEventListener('mousedown', () => (mouseDown = true));
-window.addEventListener('mouseup', () => (mouseDown = false));
-window.addEventListener('mousemove', (e) => {
-  if(mouseDown) {
-    rgb = [
-      Math.round((e.pageX / sizes.width) * 255),
-      Math.round((e.pageY / sizes.height) * 255),
-      150
-    ]
-    // Animate color
-    let newColor = new THREE.Color(`rgb(${rgb.join(",")})`);
-    gsap.to(mesh.material.color, {r: newColor.r, g: newColor.g, b: newColor.b});
-  }
-});
