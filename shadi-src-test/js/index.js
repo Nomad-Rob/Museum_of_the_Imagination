@@ -12,12 +12,6 @@ const sizes = {
   height: window.innerHeight,
 }
 
-// Sphere Lights
-// const sphereLight = new THREE.PointLight(0xffffff, .8, 100);
-// sphereLight.position.set(0, 100, 10);
-// sphereLight.intensity = 300
-// scene.add(sphereLight);
-
 // dat.Gui instantiation
 const gui = new dat.GUI();
 
@@ -137,9 +131,9 @@ const rightRockFgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.lo
 const leftMountainFgMaterial = new THREE.MeshBasicMaterial({ map: parallaxLoader.load('images/parallax-assets/left-mountain-foreground.png'), transparent: true });
 
 // Background geometry
-const bgGeometry = new THREE.PlaneGeometry(476, 288);
+const bgGeometry = new THREE.PlaneGeometry(530, 321);
 const santaGeometry = new THREE.PlaneGeometry(476, 113);
-const leftMountainBgGeometry = new THREE.PlaneGeometry(205, 93);
+const leftMountainBgGeometry = new THREE.PlaneGeometry(230, 104);
 const rightMountainBgGeometry = new THREE.PlaneGeometry(194, 89);
 const mainMountainGeometry = new THREE.PlaneGeometry(411, 229);
 const rightMountainPreBgGeometry = new THREE.PlaneGeometry(184, 148);
@@ -163,7 +157,7 @@ const leftMountainFgMesh = new THREE.Mesh(leftMountainFgGeometry, leftMountainFg
 // Set position for each mesh
 bgMesh.position.set(0, 0, -40);
 santaMesh.position.set(-5.4, 61, -30);
-leftMountainBgMesh.position.set(-133, -14.2, -36);
+leftMountainBgMesh.position.set(-130, 0, -36);
 rightMountainBgMesh.position.set(162, -20, -36);
 mainMountainMesh.position.set(21, -18.6, -30);
 rightMountainPreBgMesh.position.set(136, -50, -24);
@@ -171,17 +165,17 @@ middleMountainMesh.position.set(39, -72, -18);
 rightMountainPreFgMesh.position.set(136, -49.5, -12);
 rightRockFgMesh.position.set(127, -84.8, -6);
 leftMountainFgMesh.position.set(-98, -53.9, -6);
-console.log(bgMesh);
+// console.log(bgMesh);
 
 // Add meshes to scene
 snowScene.add(bgMesh, santaMesh, leftMountainBgMesh, rightMountainBgMesh, mainMountainMesh, rightMountainPreBgMesh, middleMountainMesh, rightMountainPreFgMesh, rightRockFgMesh, leftMountainFgMesh);
 // *********************************************************
 
 // Axis helper
-const axesHelper = new THREE.AxesHelper(300);
-snowScene.add(axesHelper);
+// const axesHelper = new THREE.AxesHelper(300);
+// snowScene.add(axesHelper);
 
-// Calling loops 
+// Creating and calling animation loop
 function animate() {
   requestAnimationFrame(animate);
 
@@ -208,17 +202,57 @@ window.addEventListener('resize', () => {
   renderer.setSize(sizes.width, sizes.height);
 })
 
-// Timeline magic
+// Timeline magic *****************************************************
 const tl = gsap.timeline({defaults: {duration: 1}});
 
 // Add opacity animations for all meshes using fromTo with staggered delays
 tl.fromTo(santaMesh.position, { y: 180 }, { y: 61, delay: 1 });
 tl.fromTo(rightMountainPreBgMesh.position, { x: 236 }, { x: 136, delay: -.5 });
 tl.fromTo(rightRockFgMesh.position, { y: -200 }, { y: -84.8, delay: -.9 });
-tl.fromTo(leftMountainFgMesh.position, { x: -260 }, { x: -98, delay: -.8 });
+tl.fromTo(leftMountainFgMesh.position, { x: -290 }, { x: -98, delay: -.8 });
 tl.fromTo(middleMountainMesh.position, { y: -200 }, { y: -72, delay: -.5 });
 tl.fromTo(rightMountainPreFgMesh.position, { y: -180 }, { y: -49.5, delay: -.7 });
 
 // Title and nav bar animation
 tl.fromTo('nav', {y: "-100%"}, {y: "0%"});
-tl.fromTo('.title-image', {opacity: 0}, {opacity: 1});
+tl.fromTo('.title-image', {opacity: 0}, {opacity: 1, delay: -.6});
+
+// onComplete callback allows parallax to only work after timeline is finished
+tl.eventCallback("onComplete", () => {
+  // Parallax logic
+  let xValue = 0;
+  let yValue = 0;
+
+  // Storying the current positions to be updated in the event lister, and the original positions array copy to compare parallax position vs original position
+  let meshPositionArray = [bgMesh, santaMesh, leftMountainBgMesh, rightMountainBgMesh, mainMountainMesh, rightMountainPreBgMesh, middleMountainMesh, rightMountainPreFgMesh, rightRockFgMesh, leftMountainFgMesh];
+  meshPositionArray.reverse();
+  const originalPositions = meshPositionArray.map(mesh => mesh.position.clone());
+
+  window.addEventListener("mousemove", (e) => {
+    xValue = (e.clientX - sizes.width / 2) / 100;
+    yValue = (e.clientY - sizes.height / 2) / 100;
+
+    meshPositionArray.forEach((meshElement, index) => {
+      let parallaxFactor = index * 0.2;
+      if(index === 0) {
+        parallaxFactor = .2
+      }
+
+      // Calculate the new position based on the parallax effect
+      let newX = originalPositions[index].x + xValue * parallaxFactor;
+      let newY = originalPositions[index].y - yValue * parallaxFactor;
+
+      // Calculate maximum allowed positions
+      const maxX = sizes.width / 2 - meshElement.geometry.parameters.width / 2;
+      const maxY = sizes.height / 2 - meshElement.geometry.parameters.height / 2;
+
+      // Clamp the new positions to limit movement
+      newX = Math.max(-maxX, Math.min(maxX, newX));
+      newY = Math.max(-maxY, Math.min(maxY, newY));
+
+      // Update the mesh position
+      meshElement.position.set(newX, newY, meshElement.position.z);
+    });
+  });
+});
+// ********************************************************************
