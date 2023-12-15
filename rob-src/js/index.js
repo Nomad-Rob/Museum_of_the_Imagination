@@ -48,8 +48,7 @@ const canvas = document.querySelector('.main-webgl');
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('#333333');
 
-// Background Scene
-const backgroundScene = new THREE.Scene();
+
 
 // Canvas Sizes
 const sizesCanvas = {
@@ -59,11 +58,6 @@ const sizesCanvas = {
 
 // Event Listener for window resize
 window.addEventListener('resize', onWindowResize);
-
-
-// Raycaster for interaction
-const raycaster = new THREE.Raycaster();
-let currentIntersect = null;
 
 
 
@@ -118,9 +112,6 @@ setupRenderer();
 
 // Event listener for player close
 playerClose.addEventListener('click', onClosePlayer);
-
-// Clock for animations and updates
-const clock = new THREE.Clock();
 
 // Start the animation loop
 init();
@@ -211,54 +202,49 @@ function onLoadComplete() {
     // Create a group to hold the images and text
     const imageGroup = new THREE.Group();
     scene.add(imageGroup);
-  
+
     const numImages = data.length;
     const radius = 50; // Adjust the radius for spacing between images
     const angleIncrement = (2 * Math.PI) / numImages;
-  
+
     // Get the position of the santa.glb model
     const santaPosition = models[0].position;
-  
+
     data.forEach((item, index) => {
-      // Calculate the position of the image based on polar coordinates
-      const angle = angleIncrement * index;
-      const imageX = santaPosition.x + radius * Math.cos(angle);
-      const imageY = santaPosition.y + 10; // Raise the images by 10 units on the Y-axis
-      const imageZ = santaPosition.z + radius * Math.sin(angle);
-  
-      // Load image texture
-      const texture = textureLoader.load(item.imageUrl);
-  
-      // Create a plane with the image texture
-      const imagePlane = new THREE.Mesh(
-        new THREE.PlaneGeometry(10, 10), // Adjust the size as needed
-        new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
-      );
-  
-      // Set the position of the image
-      imagePlane.position.set(imageX, imageY, imageZ);
-  
-      // Calculate the rotation to face the center
-      const angleToCenter = Math.atan2(
-        santaPosition.x - imageX,
-        santaPosition.z - imageZ
-      );
-      imagePlane.rotation.y = angleToCenter;
-  
-      // Create a text sprite
-      const textSprite = createTextSprite(item.text, item.year);
-      // Adjust the Y position of the text to bring it closer to the center
-      const textY = santaPosition.y + 8; // Adjust this value as needed
-      const textX = santaPosition.x + (radius - 5) * Math.cos(angle); // Adjust the radius for text
-      const textZ = santaPosition.z + (radius - 5) * Math.sin(angle); // Adjust the radius for text
-      textSprite.position.set(textX, textY, textZ);
-      textSprite.rotation.y = angleToCenter;
-  
-      // Add the image and text to the group
-      imageGroup.add(imagePlane);
-      imageGroup.add(textSprite);
+        // Calculate the position of the image based on polar coordinates
+        const angle = angleIncrement * index;
+        const imageX = santaPosition.x + radius * Math.cos(angle);
+        const imageY = santaPosition.y - 2 * (index + 1); // Adjust the Y position
+        const imageZ = santaPosition.z + radius * Math.sin(angle);
+
+        // Load image texture
+        const texture = textureLoader.load(item.imageUrl);
+
+        // Create a plane with the image texture
+        const imagePlane = new THREE.Mesh(
+            new THREE.PlaneGeometry(10, 10), // Adjust the size as needed
+            new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
+        );
+
+        // Set the position and rotation of the image
+        imagePlane.position.set(imageX, imageY, imageZ);
+        imagePlane.lookAt(santaPosition);
+
+        // Create a text sprite
+        const textSprite = createTextSprite(item.text, item.year);
+
+        // Set the position of the text relative to the image
+        const textOffsetY = 5; // Adjust this value as needed
+        textSprite.position.set(imageX, imageY + textOffsetY, imageZ);
+
+        // Set the rotation of the text to match the image
+        textSprite.lookAt(santaPosition);
+
+        // Add the image and text to the group
+        imageGroup.add(imagePlane);
+        imageGroup.add(textSprite);
     });
-  }
+}
   
 
 function createTextSprite(text, year) {
@@ -555,7 +541,6 @@ function init() {
   // The main animation loop
   const animate = () => {
     renderer.render(scene, camera);
-    renderer.render(backgroundScene, backgroundCamera);
     window.requestAnimationFrame(animate);
   };
 
