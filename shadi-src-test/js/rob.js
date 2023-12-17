@@ -10,26 +10,25 @@ const playerClose = document.querySelector('.player-close');
 const playerSource = document.querySelector('.player-source');
 const counterLoading = document.querySelector('.counterLoading');
 const header = document.querySelector('header');
-const h1 = document.querySelector('h1');
 const footer = document.querySelector('footer');
 const loading = document.querySelector('.loading');
 const started = document.querySelector('.started');
-const startedBtn = document.querySelector('.started-btn');
+const startBtn = document.querySelector('.started-btn');
 
-// Debug object for future enhancements
-const debugObject = {};
+// // Debug object for future enhancements
+// const debugObject = {};
 
-// Canvas setup
-const canvas = document.querySelector('.main-webgl');
+// // Canvas setup
+// const canvas = document.querySelector('.main-webgl');
 
-// Main Scene
-const scene = new THREE.Scene();
-scene.background = new THREE.Color('#333333');
+// Main santaScene
+const santaScene = new THREE.Scene();
+santaScene.background = new THREE.Color('#333333');
 
 
 
 // Canvas Sizes
-const sizesCanvas = {
+const sizes = {
   width: window.innerWidth,
   height: window.innerHeight
 };
@@ -58,25 +57,25 @@ let models = [];
 // Load models (Santa and Sleigh)
 loadModels();
 
-// Axes Helper for development
-const axesHelper = new THREE.AxesHelper(250);
-scene.add(axesHelper);
+// // Axes Helper for development
+// const axesHelper = new THREE.AxesHelper(250);
+// santaScene.add(axesHelper);
 
-// Initialize the canvas on DOMContentLoaded
-window.addEventListener('DOMContentLoaded', initializeCanvas);
+// // Initialize the canvas on DOMContentLoaded
+// window.addEventListener('DOMContentLoaded', initializeCanvas);
 
-// Environment map intensity (Debugging and Material Enhancement)
-debugObject.envMapIntensity = 2;
+// // Environment map intensity (Debugging and Material Enhancement)
+// debugObject.envMapIntensity = 2;
 
-// Camera setup
-const camera = setupCamera();
-scene.add(camera);
+// Santa Camera setup
+const santaCamera = setupSantaCamera();
+santaScene.add(santaCamera);
 
 // Background camera setup (Orthographic)
 const backgroundCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, -1, 0);
 
 // Controls setup
-const controls = new OrbitControls(camera, canvas);
+const controls = new OrbitControls(santaCamera, canvas);
 setupControls();
 
 // Lighting setup
@@ -97,28 +96,28 @@ init();
 // Event handler functions and other function definitions below...
 
 function onWindowResize() {
-  // Update canvas size, camera aspect ratio, and renderer on window resize
-  sizesCanvas.width = window.innerWidth;
-  sizesCanvas.height = window.innerHeight;
+  // Update canvas size, santaCamera aspect ratio, and renderer on window resize
+  sizes.width = window.innerWidth;
+  sizes.height = window.innerHeight;
 
-  // Update camera aspect ratio
-  camera.aspect = sizesCanvas.width / sizesCanvas.height;
-  camera.updateProjectionMatrix();
+  // Update santaCamera aspect ratio
+  santaCamera.aspect = sizes.width / sizes.height;
+  santaCamera.updateProjectionMatrix();
   // Update background camera aspect ratio
-  backgroundCamera.left = -sizesCanvas.width / 2;
-  backgroundCamera.right = sizesCanvas.width / 2;
-  backgroundCamera.top = sizesCanvas.height / 2;
-  backgroundCamera.bottom = -sizesCanvas.height / 2;
+  backgroundCamera.left = -sizes.width / 2;
+  backgroundCamera.right = sizes.width / 2;
+  backgroundCamera.top = sizes.height / 2;
+  backgroundCamera.bottom = -sizes.height / 2;
   backgroundCamera.updateProjectionMatrix();
 
-  renderer.setSize(sizesCanvas.width, sizesCanvas.height);
+  renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 }
 
 function onMouseMove(event) {
   // Update mouse position
-  mouse.x = event.clientX / sizesCanvas.width * 2 - 1;
-  mouse.y = -(event.clientY / sizesCanvas.height) * 2 + 1;
+  mouse.x = event.clientX / sizes.width * 2 - 1;
+  mouse.y = -(event.clientY / sizes.height) * 2 + 1;
 }
 
 function onLoadComplete() {
@@ -132,24 +131,6 @@ function onLoadComplete() {
   });
 
   // Animate header, h1, and footer into view
-  gsap.to(header, {
-      top: 10,
-      left: 10,
-      transform: 'translate(0, 0)',
-      ease: Power1.easeIn,
-      duration: 0.5
-  });
-
-  gsap.to(h1, {
-      fontSize: 25,
-      top: 10,
-      left: 10,
-      transform: 'translate(0, 0)',
-      width: 150,
-      ease: Power1.easeIn,
-      duration: 0.5
-  });
-
   gsap.to(footer, {
       delay: 0.5,
       opacity: 1,
@@ -164,10 +145,10 @@ function onLoadComplete() {
       duration: 0.5
   });
 
-  // Add an event listener to the 'startedBtn' element
-  startedBtn.addEventListener('click', () => {
+  // Add an event listener to the 'startBtn' element
+  startBtn.addEventListener('click', () => {
       continueAnimation();
-      console.log('startedBtn clicked');
+      console.log('startBtn clicked');
       
       fetch('images.json')
       .then(response => response.json())
@@ -179,7 +160,7 @@ function onLoadComplete() {
   function displayImagesAndText(data) {
     // Create a group to hold the images and text
     const imageGroup = new THREE.Group();
-    scene.add(imageGroup);
+    santaScene.add(imageGroup);
 
     const numImages = data.length;
     const radius = 50; // Adjust the radius for spacing between images
@@ -212,11 +193,12 @@ function onLoadComplete() {
         const textSprite = createTextSprite(item.text, item.year);
 
         // Set the position of the text relative to the image
-        const textOffsetY = 5; // Adjust this value as needed
-        textSprite.position.set(imageX, imageY + textOffsetY, imageZ);
+        const textOffsetX = 5; // Adjust this value as needed
+        const textOffsetZ = 5;
+        textSprite.position.set(imageX + textOffsetX, imageY, imageZ + textOffsetZ);
 
         // Set the rotation of the text to match the image
-        textSprite.lookAt(0, santaPosition.y, 0);
+        textSprite.lookAt(santaPosition);
 
         // Add the image and text to the group
         imageGroup.add(imagePlane);
@@ -294,13 +276,14 @@ function createTextSprite(text, year) {
   const texture = new THREE.CanvasTexture(canvas);
 
   // Create a sprite with the texture
-  const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
-  const sprite = new THREE.Sprite(spriteMaterial);
+  const spriteMaterial = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
+  const spriteGeometry = new THREE.PlaneGeometry(10, 10);
+  const spriteMesh = new THREE.Mesh(spriteGeometry, spriteMaterial);
 
   // Scale the sprite to match the canvas size
-  sprite.scale.set(canvas.width / 100, (canvas.height + 100) / 100, 1);
+  spriteMesh.rotateX(180);
 
-  return sprite;
+  return spriteMesh;
 }
 
   // Setting a timeout to ensure that certain actions only happen after the rest of the script has loaded
@@ -321,18 +304,18 @@ function loadModels() {
   gltfLoader.load(
       "models/santa.glb",
       (gltf) => {
-          gltf.scene.scale.set(5, 5, 5);
-          // gltf.scene.position.y = initialPositionMeshY 0;
-          gltf.scene.position.z = 0;
-          gltf.scene.position.y = -5;
-          gltf.scene.position.x = 0;
-          gltf.scene.rotation.x = 0;
-          // gltf.scene.rotation.y = initialRotationMeshY 0
+          gltf.santaScene.scale.set(5, 5, 5);
+          // gltf.santaScene.position.y = initialPositionMeshY 0;
+          gltf.santaScene.position.z = 0;
+          gltf.santaScene.position.y = -5;
+          gltf.santaScene.position.x = 0;
+          gltf.santaScene.rotation.x = 0;
+          // gltf.santaScene.rotation.y = initialRotationMeshY 0
 
-          scene.add(gltf.scene);
-          models.push(gltf.scene);
+          santaScene.add(gltf.santaScene);
+          models.push(gltf.santaScene);
 
-          scene.traverse((child) => {
+          santaScene.traverse((child) => {
               if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
                   child.material.envMapIntensity = debugObject.envMapIntensity;
                   child.material.needsUpdate = true;
@@ -349,17 +332,17 @@ function loadModels() {
   gltfLoader.load(
       "models/sleigh.glb",
       (gltf) => {
-          gltf.scene.scale.set(0.05, 0.05, 0.05);
-          gltf.scene.position.y = -7.8;
-          // gltf.scene.position.y = initialPositionMeshY 0;
-          gltf.scene.position.x = 0;
-          gltf.scene.position.z = -1.8;
-          gltf.scene.rotation.y = -1.6;
+          gltf.santaScene.scale.set(0.05, 0.05, 0.05);
+          gltf.santaScene.position.y = -7.8;
+          // gltf.santaScene.position.y = initialPositionMeshY 0;
+          gltf.santaScene.position.x = 0;
+          gltf.santaScene.position.z = -1.8;
+          gltf.santaScene.rotation.y = -1.6;
           
-          // gltf.scene.rotation.y = initialRotationMeshY 0;
+          // gltf.santaScene.rotation.y = initialRotationMeshY 0;
 
-          scene.add(gltf.scene);
-          models.push(gltf.scene);
+          santaScene.add(gltf.santaScene);
+          models.push(gltf.santaScene);
       },
       undefined,
       (error) => {
@@ -370,29 +353,29 @@ function loadModels() {
 
 
 
-function initializeCanvas() {
-  // Initialize the canvas size and camera settings
-  camera.aspect = sizesCanvas.width / sizesCanvas.height;
-  camera.updateProjectionMatrix();
+// function initializeCanvas() {
+//   // Initialize the canvas size and camera settings
+//   santaCamera.aspect = sizes.width / sizes.height;
+//   santaCamera.updateProjectionMatrix();
 
-  backgroundCamera.left = -sizesCanvas.width / 2;
-  backgroundCamera.right = sizesCanvas.width / 2;
-  backgroundCamera.top = sizesCanvas.height / 2;
-  backgroundCamera.bottom = -sizesCanvas.height / 2;
-  backgroundCamera.updateProjectionMatrix();
+//   backgroundCamera.left = -sizes.width / 2;
+//   backgroundCamera.right = sizes.width / 2;
+//   backgroundCamera.top = sizes.height / 2;
+//   backgroundCamera.bottom = -sizes.height / 2;
+//   backgroundCamera.updateProjectionMatrix();
 
-  renderer.setSize(sizesCanvas.width, sizesCanvas.height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-}
+//   renderer.setSize(sizes.width, sizes.height);
+//   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+// }
 
-function setupCamera() {
-  // Set up and return the main camera
-  const camera = new THREE.PerspectiveCamera(80, sizesCanvas.width / sizesCanvas.height, 0.1, 250);
-  camera.name = 'Main Camera';
-  camera.position.x = 0;
-  camera.position.y = 5;
-  camera.position.z = 30;
-  return camera;
+function setupSantaCamera() {
+  // Set up and return the main santaCamera
+  const santaCamera = new THREE.PerspectiveCamera(80, sizes.width / sizes.height, 0.1, 250);
+  santaCamera.name = 'Santa Camera';
+  santaCamera.position.x = 0;
+  santaCamera.position.y = 5;
+  santaCamera.position.z = 30;
+  return santaCamera;
 }
 
 function setupControls() {
@@ -402,18 +385,18 @@ function setupControls() {
 }
 
 function setupLighting() {
-  // Set up scene lighting (ambient and point lights)
+  // Set up santaScene lighting (ambient and point lights)
   const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
-  scene.add(ambientLight);
+  santaScene.add(ambientLight);
 
   const pointLight = new THREE.PointLight(0xffffff, 15);
   pointLight.position.set(0,0,0);
-  scene.add(pointLight);
+  santaScene.add(pointLight);
 }
 
 function setupRenderer() {
   // Configure the WebGL renderer
-  renderer.setSize(sizesCanvas.width, sizesCanvas.height);
+  renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.autoClear = false;
 }
@@ -436,8 +419,8 @@ function continueAnimation() {
       duration: 0.5
   });
 
-  // Animate the camera position after
-  gsap.to(camera.position, {
+  // Animate the santaCamera position after
+  gsap.to(santaCamera.position, {
       delay: 1,
       x: 0,
       y: 5,
@@ -448,7 +431,7 @@ function continueAnimation() {
   setTimeout(() => {
     loading.style.visibility = "hidden"
     started.style.visibility = "hidden"
-}, 250);
+  }, 250);
   
 
   // Set a timeout to execute the following block of code after a delay of 250 milliseconds
@@ -490,7 +473,7 @@ function onClosePlayer() {
 function init() {
   // The main animation loop
   const animate = () => {
-    renderer.render(scene, camera);
+    renderer.render(santaScene, santaCamera);
     window.requestAnimationFrame(animate);
   };
 

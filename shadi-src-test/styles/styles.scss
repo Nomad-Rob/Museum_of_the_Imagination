@@ -1,0 +1,202 @@
+/* General styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body,
+html {
+  overflow-x: hidden;
+  font-family: "Poppins", sans-serif;
+}
+
+.webgl {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+/* Nav bar styling */
+nav {
+  color: white;
+  z-index: 30;
+  position: relative;
+  padding: 2rem 8rem;
+  display: none;
+  justify-content: space-between;
+}
+nav a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 4rem;
+  align-items: center;
+}
+
+/* Vignette */
+.vignette {
+  position: absolute;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 65%, rgba(0, 0, 0, 0.7));
+}
+
+// Percentage loading div
+.loading {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgb(0, 0, 0);
+
+  p {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #fff;
+      font-size: 75px;
+      z-index: 10;
+  }
+}
+
+// Start button styling
+.started {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 250px;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  z-index: 11;
+
+  button {
+      width: 35px;
+      height: 35px;
+      background-color: rgb(253, 253, 253);
+      border-radius: 50%;
+      border: none;
+      transition: 0.2s;
+      cursor: pointer;
+
+      &:hover {
+          opacity: 0.6;
+      }
+  }
+
+  p {
+      margin-top: 10px;
+      color: #fff;
+  }
+}
+
+// Used for music
+.player {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 5;
+  background-color: rgba(0, 0, 0, 0.459);
+  opacity: 0;
+  visibility: hidden;
+
+  .player-source {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%); 
+      width: 85vw;
+      height: 85vh;
+      z-index: 6;
+  }
+
+  .player-close {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      top: 20px;
+      right: 20px;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: 0.2s;
+      z-index: 7;
+
+      &:hover {
+          transform: scale(1.05);
+      }
+
+      &::after {
+          content: "";
+          position: absolute;
+          width: 25px;
+          height: 2px;
+          background-color: #000;
+          transform: translate(-50%, -50%) rotate(45deg);
+      }
+  
+      &::before {
+          content: "";
+          position: absolute;
+          width: 25px;
+          height: 2px;
+          background-color: #000;
+          transform: translate(-50%, -50%) rotate(-45deg);
+      }
+  }
+}
+
+// Footer styling
+footer {
+  opacity: 0;
+
+  p {
+      position: absolute;
+      bottom: 0;
+      margin: 25px;
+      color: #fff;
+      z-index: 3;
+  }
+}
+
+/* Image styling */
+.logo-image {
+  width: 99px;
+  height: 83px;
+  z-index: 30;
+}
+
+.title-image {
+  z-index: 30;
+  position: absolute;
+  width: 666px;
+  left: 50%;
+  top: 73%;
+  transform: translate(-50%, 0%);
+  display: none;
+}
+
+/* Temporary styling */
+.loading,
+.started,
+.player,
+footer {
+  display: none;
+}
