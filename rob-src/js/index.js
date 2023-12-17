@@ -177,137 +177,103 @@ function onLoadComplete() {
   });
 
   function displayImagesAndText(data) {
-    // Create a group to hold the images and text
     const imageGroup = new THREE.Group();
     scene.add(imageGroup);
 
     const numImages = data.length;
-    const radius = 50; // Adjust the radius for spacing between images
+    const radius = 50;
     const angleIncrement = (2 * Math.PI) / numImages;
-
-    // Get the position of the santa.glb model
     const santaPosition = models[0].position;
 
     data.forEach((item, index) => {
-        // Calculate the position of the image based on polar coordinates
         const angle = angleIncrement * index;
         const imageX = santaPosition.x + radius * Math.cos(angle);
-        const imageY = santaPosition.y * (index + 1); // Adjust the Y position
+        const imageY = santaPosition.y * (index + 1);
         const imageZ = santaPosition.z + radius * Math.sin(angle);
 
-        // Load image texture
         const texture = textureLoader.load(item.imageUrl);
-
-        // Create a plane with the image texture
         const imagePlane = new THREE.Mesh(
-            new THREE.PlaneGeometry(10, 10), // Adjust the size as needed
+            new THREE.PlaneGeometry(10, 10),
             new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
         );
-
-        // Set the position and rotation of the image
         imagePlane.position.set(imageX, imageY, imageZ);
         imagePlane.lookAt(santaPosition);
+        imagePlane.rotation.y += Math.PI;
 
-        // Create a text sprite
         const textSprite = createTextSprite(item.text, item.year);
-
-        // Set the position of the text relative to the image
-        const textOffsetX = 5; // Adjust this value as needed
+        const textOffsetX = 5;
         const textOffsetZ = 5;
         textSprite.position.set(imageX + textOffsetX, imageY, imageZ + textOffsetZ);
-
-        // Set the rotation of the text to match the image
         textSprite.lookAt(santaPosition);
+        textSprite.rotation.y += Math.PI;
 
-        // Add the image and text to the group
         imageGroup.add(imagePlane);
         imageGroup.add(textSprite);
     });
 }
-  
 
 function createTextSprite(text, year) {
-  // Create a canvas element to generate the text sprite
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
-  canvas.width = 800;
-  canvas.height = 600;
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.width = 800;
+    canvas.height = 600;
 
-  // Customize the appearance of the text
-  context.font = '60px Arial'; // Adjust font size and style as needed
-  context.fillStyle = 'white'; // Adjust text color as needed
-  context.textAlign = 'center';
+    context.globalAlpha = 0.0; // Fully transparent
+    context.fillStyle = 'rgba(0, 0, 0, 0)'; // Transparent fill
+    context.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Split the text into words
-  const words = text.split(' ');
+    context.globalAlpha = 1.0;
+    context.font = '60px Arial';
+    context.fillStyle = 'white';
+    context.textAlign = 'center';
 
-  // Calculate the maximum number of words that can fit in a line
-  const maxWordsPerLine = 5; // Adjust as needed
+    const words = text.split(' ');
+    const maxWordsPerLine = 5;
+    const maxLines = 2;
+    const lines = [];
+    let currentLine = '';
+    for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        const testLine = currentLine + word + ' ';
+        const metrics = context.measureText(testLine);
+        const lineWidth = metrics.width;
+        if (lineWidth > canvas.width && i > 0) {
+            lines.push(currentLine);
+            currentLine = word + ' ';
+        } else {
+            currentLine = testLine;
+        }
+        if (lines.length >= maxLines) {
+            break;
+        }
+    }
+    lines.push(currentLine);
 
-  // Calculate the maximum number of lines that can fit in the canvas
-  const maxLines = 2; // Adjust as needed
-
-  // Calculate the maximum number of words that can fit in the text sprite
-  const maxWords = maxWordsPerLine * maxLines;
-
-  // Create an array to store the lines of text
-  const lines = [];
-
-  // Iterate through the words and create lines of text
-  let currentLine = '';
-  for (let i = 0; i < words.length; i++) {
-    const word = words[i];
-    const testLine = currentLine + word + ' ';
-    const metrics = context.measureText(testLine);
-    const lineWidth = metrics.width;
-
-    if (lineWidth > canvas.width && i > 0) {
-      lines.push(currentLine);
-      currentLine = word + ' ';
-    } else {
-      currentLine = testLine;
+    const lineHeight = 60;
+    const startY = (canvas.height - (lines.length * lineHeight)) / 2;
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const y = startY + (i * lineHeight);
+        context.fillText(line, canvas.width / 2, y);
     }
 
-    if (lines.length >= maxLines) {
-      break;
-    }
-  }
+    context.font = '40px Arial';
+    const yearLineHeight = 40;
+    const yearY = startY + (lines.length * lineHeight) + yearLineHeight;
+    context.fillText(year, canvas.width / 2, yearY);
 
-  // Push the remaining words as the last line
-  lines.push(currentLine);
+    const texture = new THREE.CanvasTexture(canvas);
+    const spriteMaterial = new THREE.MeshBasicMaterial({ map: texture, transparent: true, side: THREE.DoubleSide });
+    const spriteGeometry = new THREE.PlaneGeometry(10, 10);
+    const spriteMesh = new THREE.Mesh(spriteGeometry, spriteMaterial);
 
-  // Draw the lines of text on the canvas
-  const lineHeight = 60; // Adjust line height as needed
-  const startY = (canvas.height - (lines.length * lineHeight)) / 2;
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const y = startY + (i * lineHeight);
-    context.fillText(line, canvas.width / 2, y);
-  }
-
-  // Draw the year underneath the text
-  context.font = '40px Arial'; // Adjust font size and style as needed
-  const yearLineHeight = 40; // Adjust line height for the year
-  const yearY = startY + (lines.length * lineHeight) + yearLineHeight; // Adjust the vertical position of the year
-  context.fillText(year, canvas.width / 2, yearY);
-
-  // Create a texture from the canvas
-  const texture = new THREE.CanvasTexture(canvas);
-
-  // Create a sprite with the texture
-  const spriteMaterial = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
-  const spriteGeometry = new THREE.PlaneGeometry(10, 10);
-  const spriteMesh = new THREE.Mesh(spriteGeometry, spriteMaterial);
-
-  // Scale the sprite to match the canvas size
-  spriteMesh.rotateX(180);
-
-  return spriteMesh;
+    return spriteMesh;
 }
 
-  // Setting a timeout to ensure that certain actions only happen after the rest of the script has loaded
-  setTimeout(() => {
-  }, 50);
+// Optional: Setting a timeout for certain actions, if necessary
+setTimeout(() => {
+    // Your delayed actions here
+}, 50);
 }
 
 
