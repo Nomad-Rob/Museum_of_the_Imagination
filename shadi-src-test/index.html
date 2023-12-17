@@ -29,12 +29,28 @@
     <!-- Vignette effect -->
     <div class="vignette"></div>
 
+    <!-- Loading percentage div -->
+    <div class="loading">
+      <p class="counterLoading">0 %</p>
+    </div>
+
+    <!-- Start button to get into  -->
+    <div class="started">
+      <button class="start-btn">▶</button>
+      <p><strong>Scroll to use this Website</strong></br>Turn up your sound for xmas music!</p>
+    </div>
+
+    <!-- Used for music -->
+    <div class="player">
+      <button class="player-close"></button>
+      <iframe class="player-source" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+
     <!-- Canvas to load all three.js content on -->
-    <canvas class="webgl">
-    </canvas>
+    <canvas class="webgl"></canvas>
 
     <!-- Nav links -->
-    <nav>
+    <nav class="nav-bar">
       <a href="/"><img src="images/logo.png" alt="logo-image" class="logo-image"></a>
       <ul>
         <a href="/index.html">Home</a>
@@ -43,14 +59,15 @@
     </nav>
     <img src="images/cristmas-creative.png" alt="title-image" class="title-image">
 
-    <!-- Parallax images -->
-    <!-- <img src="images/parralax-assets/background.png" alt="background" class="parallax bg-img"> -->
+    <footer>
+      <p>Inspired by NOBODY</p>
+    </footer>
 
     <!-- Include Three.js from CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <!-- dat.GUI library for real time adjustments -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
+    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script> -->
 
     <!-- Three.js file for main page -->
     <script type="module" src="js/index.js"></script>
