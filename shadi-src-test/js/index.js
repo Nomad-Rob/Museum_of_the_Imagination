@@ -2,10 +2,6 @@ import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import gsap from 'gsap';
 import * as dat from 'dat.gui';
 
-// Scene
-const scene = new THREE.Scene();
-// scene.background = new THREE.Color('#ffffff');
-
 // Sizes
 const sizes = {
   width: window.innerWidth,
@@ -19,7 +15,6 @@ const gui = new dat.GUI();
 const camera = new THREE.PerspectiveCamera(60, sizes.width / sizes.height, 0.1, 600);
 camera.position.z = 160;
 // camera.lookAt(0, 83, 0);
-scene.add(camera);
 
 // Import canvas
 const canvas = document.querySelector(".webgl");
@@ -200,7 +195,18 @@ window.addEventListener('resize', () => {
   camera.aspect = sizes.width / sizes.height;
   camera.updateProjectionMatrix();
   renderer.setSize(sizes.width, sizes.height);
-})
+});
+
+// Removing disply: none attribute on title image and nav bar
+document.addEventListener("DOMContentLoaded", () => {
+  const navBar = document.querySelector('.nav-bar');
+  const titleImage = document.querySelector('.title-image');
+
+  if (navBar && titleImage) {
+    navBar.style.display = 'flex';
+    titleImage.style.display = 'block';
+  }
+});
 
 // Timeline magic *****************************************************
 const tl = gsap.timeline({defaults: {duration: 1}});
