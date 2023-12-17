@@ -16,28 +16,6 @@ const loading = document.querySelector('.loading');
 const started = document.querySelector('.started');
 const startedBtn = document.querySelector('.started-btn');
 
-// Scene variables
-let touchValue = 1;
-let videoLook = false;
-let scroll = 0.0;
-let initialPositionMeshY = -1;
-let initialRotationMeshY = Math.PI * 0.9;
-let planeClickedIndex = -1;
-let isLoading = false;
-let lastPosition = {
-    px: null,
-    py: null,
-    pz: null,
-    rx: null,
-    ry: null,
-    rz: null
-};
-let cameraZPosition = 18;
-let santaRotation = 0;
-let sleighRotation = 0;
-let imageIndex = 0;
-let revealSpeed = 0.1; // Adjust the speed of image reveal
-
 // Debug object for future enhancements
 const debugObject = {};
 
@@ -67,7 +45,7 @@ window.addEventListener('mousemove', onMouseMove);
 
 // Audio setup
 const music = new Audio('sounds/christmas.mp3');
-music.volume = 0.05;
+music.volume = 0.00;
 
 // Loaders setup
 const loadingManager = new THREE.LoadingManager(onLoadComplete, onProgress);
@@ -214,7 +192,7 @@ function onLoadComplete() {
         // Calculate the position of the image based on polar coordinates
         const angle = angleIncrement * index;
         const imageX = santaPosition.x + radius * Math.cos(angle);
-        const imageY = santaPosition.y - 2 * (index + 1); // Adjust the Y position
+        const imageY = santaPosition.y * (index + 1); // Adjust the Y position
         const imageZ = santaPosition.z + radius * Math.sin(angle);
 
         // Load image texture
@@ -238,7 +216,7 @@ function onLoadComplete() {
         textSprite.position.set(imageX, imageY + textOffsetY, imageZ);
 
         // Set the rotation of the text to match the image
-        textSprite.lookAt(santaPosition);
+        textSprite.lookAt(0, santaPosition.y, 0);
 
         // Add the image and text to the group
         imageGroup.add(imagePlane);
@@ -327,7 +305,6 @@ function createTextSprite(text, year) {
 
   // Setting a timeout to ensure that certain actions only happen after the rest of the script has loaded
   setTimeout(() => {
-      isLoading = true; // Flag indicating loading is complete
   }, 50);
 }
 
@@ -422,7 +399,6 @@ function setupControls() {
   // Set up orbit controls
   controls.enabled = true;
   controls.enableZoom = true;
-  controls.scrollSpeed = 0.5;
 }
 
 function setupLighting() {
@@ -446,6 +422,7 @@ function continueAnimation() {
   // Music and sounds here, continuous playing
   music.loop = true;
   music.play();
+  
 
   // Animate the opacity of 'started' to 0
   gsap.to(started, {
@@ -471,9 +448,6 @@ function continueAnimation() {
   setTimeout(() => {
     loading.style.visibility = "hidden"
     started.style.visibility = "hidden"
-    groupPlane.visible = true
-    groupText.visible = true
-    isLoading = true
 }, 250);
   
 
@@ -482,15 +456,10 @@ function continueAnimation() {
       // Changing the visibility of the 'loading' and 'started' elements to 'hidden'
       loading.style.visibility = "hidden";
       started.style.visibility = "hidden";
-
-      // Uncomment the below lines if you have groupPlane and groupText elements
-      // groupPlane.visible = true;
-      // groupText.visible = true;
-
-      // Setting the 'isLoading' variable to true
-      isLoading = true;
   }, 250);
 }
+
+
 
 
 
@@ -510,25 +479,6 @@ function onClosePlayer() {
           player.style.visibility = "hidden";
       }
   });
-
-  // Reset the position and rotation of the clicked plane, if any
-  if (planeClickedIndex !== -1) {
-      gsap.to(groupPlane.children[planeClickedIndex].position, {
-          x: lastPosition.px,
-          y: lastPosition.py,
-          z: lastPosition.pz,
-          duration: 0.5
-      });
-
-      gsap.to(groupPlane.children[planeClickedIndex].rotation, {
-          x: lastPosition.rx,
-          y: lastPosition.ry,
-          z: lastPosition.rz,
-          duration: 0.5
-      });
-
-      planeClickedIndex = -1;
-  }
 
   // Set a timeout to ensure video look is disabled after the animations
   setTimeout(() => {
