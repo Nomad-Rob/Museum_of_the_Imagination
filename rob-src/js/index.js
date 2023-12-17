@@ -182,15 +182,17 @@ function displayImagesAndText(data) {
   scene.add(imageGroup);
 
   const numImages = data.length;
-  const radius = 18;
+  const radius = 12; // Set the radius to 18
+  const minDistance = 25; // Set the minimum distance between images to 80
   const angleIncrement = (2 * Math.PI) / numImages;
   const santaPosition = models[0].position;
 
   data.forEach((item, index) => {
       const angle = angleIncrement * index;
-      const imageX = santaPosition.x + radius * Math.cos(angle);
+      const distance = radius + (minDistance * index); // Calculate the distance from the santaPosition
+      const imageX = santaPosition.x + distance * Math.cos(angle);
       const imageY = santaPosition.y * (index + 1);
-      const imageZ = santaPosition.z + radius * Math.sin(angle);
+      const imageZ = santaPosition.z + distance * Math.sin(angle);
 
       const texture = textureLoader.load(item.imageUrl);
       const imagePlane = new THREE.Mesh(
@@ -202,11 +204,12 @@ function displayImagesAndText(data) {
       imagePlane.rotation.y += Math.PI;
 
       const textSprite = createTextSprite(item.text, item.year);
-      const textOffsetX = 5;
-      const textOffsetZ = 5;
+      const textOffsetX = 1;
+      const textOffsetZ = 0;
       textSprite.position.set(imageX + textOffsetX, imageY, imageZ + textOffsetZ);
       textSprite.lookAt(santaPosition);
       textSprite.rotation.y += Math.PI;
+      
 
       imageGroup.add(imagePlane);
       imageGroup.add(textSprite);
