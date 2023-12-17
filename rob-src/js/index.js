@@ -15,6 +15,7 @@ const footer = document.querySelector('footer');
 const loading = document.querySelector('.loading');
 const started = document.querySelector('.started');
 const startedBtn = document.querySelector('.started-btn');
+let imageGroup = new THREE.Group();
 
 // Debug object for future enhancements
 const debugObject = {};
@@ -176,40 +177,40 @@ function onLoadComplete() {
       })
   });
 
-  function displayImagesAndText(data) {
-    const imageGroup = new THREE.Group();
-    scene.add(imageGroup);
+function displayImagesAndText(data) {
+  imageGroup = new THREE.Group();
+  scene.add(imageGroup);
 
-    const numImages = data.length;
-    const radius = 50;
-    const angleIncrement = (2 * Math.PI) / numImages;
-    const santaPosition = models[0].position;
+  const numImages = data.length;
+  const radius = 18;
+  const angleIncrement = (2 * Math.PI) / numImages;
+  const santaPosition = models[0].position;
 
-    data.forEach((item, index) => {
-        const angle = angleIncrement * index;
-        const imageX = santaPosition.x + radius * Math.cos(angle);
-        const imageY = santaPosition.y * (index + 1);
-        const imageZ = santaPosition.z + radius * Math.sin(angle);
+  data.forEach((item, index) => {
+      const angle = angleIncrement * index;
+      const imageX = santaPosition.x + radius * Math.cos(angle);
+      const imageY = santaPosition.y * (index + 1);
+      const imageZ = santaPosition.z + radius * Math.sin(angle);
 
-        const texture = textureLoader.load(item.imageUrl);
-        const imagePlane = new THREE.Mesh(
-            new THREE.PlaneGeometry(10, 10),
-            new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
-        );
-        imagePlane.position.set(imageX, imageY, imageZ);
-        imagePlane.lookAt(santaPosition);
-        imagePlane.rotation.y += Math.PI;
+      const texture = textureLoader.load(item.imageUrl);
+      const imagePlane = new THREE.Mesh(
+          new THREE.PlaneGeometry(10, 10),
+          new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
+      );
+      imagePlane.position.set(imageX, imageY, imageZ);
+      imagePlane.lookAt(santaPosition);
+      imagePlane.rotation.y += Math.PI;
 
-        const textSprite = createTextSprite(item.text, item.year);
-        const textOffsetX = 5;
-        const textOffsetZ = 5;
-        textSprite.position.set(imageX + textOffsetX, imageY, imageZ + textOffsetZ);
-        textSprite.lookAt(santaPosition);
-        textSprite.rotation.y += Math.PI;
+      const textSprite = createTextSprite(item.text, item.year);
+      const textOffsetX = 5;
+      const textOffsetZ = 5;
+      textSprite.position.set(imageX + textOffsetX, imageY, imageZ + textOffsetZ);
+      textSprite.lookAt(santaPosition);
+      textSprite.rotation.y += Math.PI;
 
-        imageGroup.add(imagePlane);
-        imageGroup.add(textSprite);
-    });
+      imageGroup.add(imagePlane);
+      imageGroup.add(textSprite);
+  });
 }
 
 function createTextSprite(text, year) {
@@ -276,6 +277,23 @@ setTimeout(() => {
 }, 50);
 }
 
+window.addEventListener('wheel', (event) => {
+  console.log('wheel event');
+  const deltaY = event.deltaY;
+  
+  // Rotate the camera around the scene
+  const rotationAmount = 0.01; // Adjust this value to control the rotation speed
+  const rotationDirection = deltaY < 0 ? 1 : -1; // Adjust this value to control the rotation direction
+  const rotationAngle = rotationAmount * rotationDirection;
+
+  models.forEach(model => {
+    model.rotation.y += rotationAngle; // Adjust this value to control the rotation speed of the models
+  });
+
+  imageGroup.rotation.y += rotationAngle * 10; // Adjust this value to control the rotation speed of the images
+});
+
+
 
 function onProgress(itemUrl, itemsLoaded, itemsTotal) {
   // Update progress for loading resources
@@ -296,6 +314,9 @@ function loadModels() {
           gltf.scene.position.x = 0;
           gltf.scene.rotation.x = 0;
           // gltf.scene.rotation.y = initialRotationMeshY 0
+          
+          // Focus camera on Santa
+        camera.lookAt(gltf.scene.position);
 
           scene.add(gltf.scene);
           models.push(gltf.scene);
@@ -366,7 +387,7 @@ function setupCamera() {
 function setupControls() {
   // Set up orbit controls
   controls.enabled = true;
-  controls.enableZoom = true;
+  controls.enableZoom = false;
 }
 
 function setupLighting() {
@@ -426,11 +447,6 @@ function continueAnimation() {
       started.style.visibility = "hidden";
   }, 250);
 }
-
-
-
-
-
 
 function onClosePlayer() {
   // Reset the source of the player to stop any playing media
