@@ -212,11 +212,12 @@ function onLoadComplete() {
         const textSprite = createTextSprite(item.text, item.year);
 
         // Set the position of the text relative to the image
-        const textOffsetY = 5; // Adjust this value as needed
-        textSprite.position.set(imageX, imageY + textOffsetY, imageZ);
+        const textOffsetX = 5; // Adjust this value as needed
+        const textOffsetZ = 5;
+        textSprite.position.set(imageX + textOffsetX, imageY, imageZ + textOffsetZ);
 
         // Set the rotation of the text to match the image
-        textSprite.lookAt(0, santaPosition.y, 0);
+        textSprite.lookAt(santaPosition);
 
         // Add the image and text to the group
         imageGroup.add(imagePlane);
@@ -294,13 +295,14 @@ function createTextSprite(text, year) {
   const texture = new THREE.CanvasTexture(canvas);
 
   // Create a sprite with the texture
-  const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
-  const sprite = new THREE.Sprite(spriteMaterial);
+  const spriteMaterial = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
+  const spriteGeometry = new THREE.PlaneGeometry(10, 10);
+  const spriteMesh = new THREE.Mesh(spriteGeometry, spriteMaterial);
 
   // Scale the sprite to match the canvas size
-  sprite.scale.set(canvas.width / 100, (canvas.height + 100) / 100, 1);
+  spriteMesh.rotateX(180);
 
-  return sprite;
+  return spriteMesh;
 }
 
   // Setting a timeout to ensure that certain actions only happen after the rest of the script has loaded

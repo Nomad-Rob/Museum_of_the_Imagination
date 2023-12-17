@@ -8,6 +8,38 @@ const sizes = {
   height: window.innerHeight,
 }
 
+// DOM Elements
+const player = document.querySelector('.player');
+const playerClose = document.querySelector('.player-close');
+const playerSource = document.querySelector('.player-source');
+const counterLoading = document.querySelector('.counterLoading');
+const footer = document.querySelector('footer');
+const loading = document.querySelector('.loading');
+const started = document.querySelector('.started');
+const startBtn = document.querySelector('.start-btn');
+
+// Scene variables
+let touchValue = 1;
+let videoLook = false;
+let scroll = 0.0;
+let initialPositionMeshY = -1;
+let initialRotationMeshY = Math.PI * 0.9;
+let planeClickedIndex = -1;
+let isLoading = false;
+let lastPosition = {
+    px: null,
+    py: null,
+    pz: null,
+    rx: null,
+    ry: null,
+    rz: null
+};
+let cameraZPosition = 18;
+let santaRotation = 0;
+let sleighRotation = 0;
+let imageIndex = 0;
+let revealSpeed = 0.1; // Adjust the speed of image reveal
+
 // dat.Gui instantiation
 const gui = new dat.GUI();
 
@@ -220,7 +252,7 @@ tl.fromTo(middleMountainMesh.position, { y: -200 }, { y: -72, delay: -.5 });
 tl.fromTo(rightMountainPreFgMesh.position, { y: -180 }, { y: -49.5, delay: -.7 });
 
 // Title and nav bar animation
-tl.fromTo('nav', {y: "-100%"}, {y: "0%"});
+tl.fromTo('.nav-bar', {y: "-100%"}, {y: "0%"});
 tl.fromTo('.title-image', {opacity: 0}, {opacity: 1, delay: -.6});
 
 // onComplete callback allows parallax to only work after timeline is finished
