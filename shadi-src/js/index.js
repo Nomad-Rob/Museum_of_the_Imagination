@@ -26,7 +26,7 @@ renderer.setPixelRatio(3);
 
 // Controls, set initally to false when page is loaded
 const controls = new OrbitControls(camera, canvas);
-controls.enabled = false;
+// controls.enabled = false;
 
 
 // *********************************************************
