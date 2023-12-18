@@ -18,6 +18,7 @@ const startedBtn = document.querySelector('.started-btn');
 let imageGroup = new THREE.Group();
 let imageGroupYPosition = 0; // Global variable to track the Y position of the image group
 let scrollPosition = 0; // Tracks the scroll position
+let cylinder; // Global reference to the cylinder
 
 
 
@@ -181,50 +182,67 @@ function onLoadComplete() {
       })
   });
 
-function displayImagesAndText(data) {
+  function displayImagesAndText(data) {
     imageGroup = new THREE.Group();
     scene.add(imageGroup);
-    const minDistance = 25; // Minimum distance between images
+
     const santaPosition = models[1].position;
-    
-    let yOffset = 0; // Offset for subsequent images on the Y-axis
+    const maxZDistance = 16; // Maximum Z distance from Santa
+    const spiralStep = 15; // Vertical distance between each image group
+    const angleIncrement = Math.PI / 4; // Angle increment for spiral
+
+    let currentAngle = 0; // Initial angle for the spiral
 
     data.forEach((item, index) => {
         let imageX, imageY, imageZ;
 
         if (index === 0) {
-            // Position the first image at the same X and Y as Santa, but 15 units away on the Z-axis
-            imageX = santaPosition.x;
-            imageY = santaPosition.y + 5;
-            imageZ = santaPosition.z + 15;
+            // Position the first image group near Santa
+            imageX = santaPosition.x ;
+            imageY = santaPosition.y + 7; // A little above Santa
+            imageZ = santaPosition.z + 15; // Starting Z position
         } else {
-            // Position subsequent images 15 units below on the Y-axis and at least 25 units away from each other
-            imageX = santaPosition.x + minDistance * index;
-            imageY = santaPosition.y - yOffset;
-            imageZ = santaPosition.z + 15;
-            yOffset += 15; // Increase the Y offset for the next image
+            // Calculate the spiral position for subsequent images
+            currentAngle += angleIncrement;
+            imageX = santaPosition.x + maxZDistance * Math.cos(currentAngle);
+            imageY = santaPosition.y + 7 - index * spiralStep; // Move down in the spiral
+            imageZ = santaPosition.z + maxZDistance * Math.sin(currentAngle);
         }
 
+        // Load texture, create image plane and text sprite
         const texture = textureLoader.load(item.imageUrl);
         const imagePlane = new THREE.Mesh(
-            new THREE.PlaneGeometry(10, 10),
+            new THREE.PlaneGeometry(7, 7),
             new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
         );
         imagePlane.position.set(imageX, imageY, imageZ);
-        imagePlane.lookAt(santaPosition);
+        imagePlane.lookAt(santaPosition.x, santaPosition.y + 5.5, santaPosition.z);
         imagePlane.rotation.y += Math.PI;
 
         const textSprite = createTextSprite(item.text, item.year);
         const textOffsetX = 1;
         const textOffsetZ = 1;
         textSprite.position.set(imageX + textOffsetX, imageY, imageZ + textOffsetZ);
-        textSprite.lookAt(santaPosition);
+        textSprite.lookAt(santaPosition.x, santaPosition.y + 5.5, santaPosition.z);
         textSprite.rotation.y += Math.PI;
-
+        
+        // As user scrolls, the imagegroup will relook at Santa
+        window.addEventListener('wheel', (event) => {
+          console.log('Relooking at Santa');
+          imagePlane.lookAt(santaPosition.x, santaPosition.y + 5.5, santaPosition.z);
+          imagePlane.rotation.y += Math.PI;
+          textSprite.lookAt(santaPosition.x, santaPosition.y + 5.5, santaPosition.z);
+          textSprite.rotation.y += Math.PI;
+        })
+          
+        
+        // Add to the image group
         imageGroup.add(imagePlane);
         imageGroup.add(textSprite);
     });
 }
+
+
 
 
 function createTextSprite(text, year) {
@@ -279,7 +297,7 @@ function createTextSprite(text, year) {
 
     const texture = new THREE.CanvasTexture(canvas);
     const spriteMaterial = new THREE.MeshBasicMaterial({ map: texture, transparent: true, side: THREE.DoubleSide });
-    const spriteGeometry = new THREE.PlaneGeometry(10, 10);
+    const spriteGeometry = new THREE.PlaneGeometry(7, 7);
     const spriteMesh = new THREE.Mesh(spriteGeometry, spriteMaterial);
 
     return spriteMesh;
@@ -297,7 +315,7 @@ window.addEventListener('wheel', (event) => {
     console.log('wheel event');
     const deltaY = event.deltaY;
 
-    // Rotate the camera around the scene
+    // Rotate the images and text around Santa
     const rotationAmount = 0.01; // Adjust this value to control the rotation speed
     const rotationDirection = deltaY < 0 ? 1 : -1; // Determine rotation direction
     const rotationAngle = rotationAmount * rotationDirection;
