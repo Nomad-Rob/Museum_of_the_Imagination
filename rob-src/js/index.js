@@ -17,8 +17,7 @@ const started = document.querySelector('.started');
 const startedBtn = document.querySelector('.started-btn');
 let imageGroup = new THREE.Group();
 let imageGroupYPosition = 0; // Global variable to track the Y position of the image group
-let scrollPosition = 0; // Tracks the scroll position
-let cylinder; // Global reference to the cylinder
+let cylinder; // Global variable to store the cylinder mesh
 
 
 
@@ -181,66 +180,67 @@ function onLoadComplete() {
         displayImagesAndText(data);
       })
   });
+  
+  
+  function createCylinder() {
+    const radius = 16;
+    const height = 80;
+    const radialSegments = 32; // Number of segments around the cylinder
+
+    const geometry = new THREE.CylinderGeometry(radius, radius, height, radialSegments);
+    const material = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide, transparent: true, opacity: 0.3 });
+    cylinder = new THREE.Mesh(geometry, material);
+    cylinder.position.set(0, -33, 0); // Set the position of the cylinder's bottom
+    cylinder.rotation.y = Math.PI / 2; // Rotate 90 degrees on the x-axis
+    scene.add(cylinder);
+  }
+    
 
   function displayImagesAndText(data) {
-    imageGroup = new THREE.Group();
-    scene.add(imageGroup);
-
-    const santaPosition = models[1].position;
-    const maxZDistance = 16; // Maximum Z distance from Santa
-    const spiralStep = 15; // Vertical distance between each image group
-    const angleIncrement = Math.PI / 4; // Angle increment for spiral
-
-    let currentAngle = 0; // Initial angle for the spiral
+    createCylinder();
+    const numberOfImages = data.length;
+    const circumference = 2 * Math.PI * cylinder.geometry.parameters.radiusTop;
+    const spacing = circumference / numberOfImages; // Space between each image group
 
     data.forEach((item, index) => {
-        let imageX, imageY, imageZ;
+      // Load texture, create image plane and text sprite
+      const texture = textureLoader.load(item.imageUrl);
+      const imagePlane = new THREE.Mesh(
+        new THREE.PlaneGeometry(7, 7),
+        new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
+      );
 
-        if (index === 0) {
-            // Position the first image group near Santa
-            imageX = santaPosition.x ;
-            imageY = santaPosition.y + 7; // A little above Santa
-            imageZ = santaPosition.z + 15; // Starting Z position
-        } else {
-            // Calculate the spiral position for subsequent images
-            currentAngle += angleIncrement;
-            imageX = santaPosition.x + maxZDistance * Math.cos(currentAngle);
-            imageY = santaPosition.y + 7 - index * spiralStep; // Move down in the spiral
-            imageZ = santaPosition.z + maxZDistance * Math.sin(currentAngle);
-        }
+      // Position the image around the cylinder
+      const theta = (spacing * index) / cylinder.geometry.parameters.radiusTop; // Angle along the cylinder
+      const imageX = cylinder.geometry.parameters.radiusTop * Math.cos(theta);
+      const imageY = Math.sin(theta) * 30; // Adjust the amplitude of the y-axis movement
+      const imageZ = cylinder.geometry.parameters.radiusTop * Math.sin(theta);
+      imagePlane.position.set(imageX, imageY, imageZ);
+      imagePlane.lookAt(cylinder.position);
 
-        // Load texture, create image plane and text sprite
-        const texture = textureLoader.load(item.imageUrl);
-        const imagePlane = new THREE.Mesh(
-            new THREE.PlaneGeometry(7, 7),
-            new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
-        );
-        imagePlane.position.set(imageX, imageY, imageZ);
+      
+      // 
+      const textSprite = createTextSprite(item.text, item.year);
+      const textOffset = 1;
+      textSprite.position.set(imageX + textOffset, imageY, imageZ + textOffset);
+      textSprite.lookAt(cylinder.position);
+      
+      window.addEventListener('wheel', (event) => {
+        console.log('Relooking at Santa');
         imagePlane.lookAt(santaPosition.x, santaPosition.y + 5.5, santaPosition.z);
         imagePlane.rotation.y += Math.PI;
-
-        const textSprite = createTextSprite(item.text, item.year);
-        const textOffsetX = 1;
-        const textOffsetZ = 1;
-        textSprite.position.set(imageX + textOffsetX, imageY, imageZ + textOffsetZ);
         textSprite.lookAt(santaPosition.x, santaPosition.y + 5.5, santaPosition.z);
         textSprite.rotation.y += Math.PI;
-        
-        // As user scrolls, the imagegroup will relook at Santa
-        window.addEventListener('wheel', (event) => {
-          console.log('Relooking at Santa');
-          imagePlane.lookAt(santaPosition.x, santaPosition.y + 5.5, santaPosition.z);
-          imagePlane.rotation.y += Math.PI;
-          textSprite.lookAt(santaPosition.x, santaPosition.y + 5.5, santaPosition.z);
-          textSprite.rotation.y += Math.PI;
-        })
-          
-        
-        // Add to the image group
-        imageGroup.add(imagePlane);
-        imageGroup.add(textSprite);
+      })
+
+      // Create a group for the image and text and add to the cylinder
+      const imageGroup = new THREE.Group();
+      imageGroup.add(imagePlane);
+      imageGroup.add(textSprite);
+      cylinder.add(imageGroup);
     });
 }
+
 
 
 
@@ -330,6 +330,13 @@ window.addEventListener('wheel', (event) => {
     const verticalMovementSpeed = 0.5; // Adjust this value to control the speed of vertical movement
     imageGroupYPosition += rotationDirection * verticalMovementSpeed;
     imageGroup.position.y = imageGroupYPosition;
+    
+    // Move the cylinder up or down on the y-axis
+    cylinder.position.y += rotationDirection * verticalMovementSpeed;
+    // rotate the cylinder
+    cylinder.rotation.y += rotationAngle * 20;
+
+    
 });
 
 
