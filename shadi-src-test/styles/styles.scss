@@ -16,6 +16,7 @@ html {
   top: 0;
   left: 0;
   z-index: 1;
+  pointer-events: auto;
 }
 
 /* Nav bar styling */
@@ -43,12 +44,13 @@ nav ul {
 /* Vignette */
 .vignette {
   position: absolute;
-  z-index: 10;
+  z-index: 29;
   width: 100%;
   height: 100%;
   top: 0;
   left: 0;
   background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 65%, rgba(0, 0, 0, 0.7));
+  pointer-events: none;
 }
 
 // Percentage loading div
@@ -67,7 +69,7 @@ nav ul {
       transform: translate(-50%, -50%);
       color: #fff;
       font-size: 75px;
-      z-index: 10;
+      z-index: 30;
   }
 }
 
@@ -83,7 +85,7 @@ nav ul {
   width: 250px;
   transform: translate(-50%, -50%);
   opacity: 0;
-  z-index: 11;
+  z-index: 30;
 
   button {
       width: 35px;
@@ -124,7 +126,7 @@ nav ul {
       transform: translate(-50%, -50%); 
       width: 85vw;
       height: 85vh;
-      z-index: 6;
+      z-index: 30;
   }
 
   .player-close {
@@ -137,7 +139,7 @@ nav ul {
       border-radius: 50%;
       cursor: pointer;
       transition: 0.2s;
-      z-index: 7;
+      z-index: 30;
 
       &:hover {
           transform: scale(1.05);
@@ -166,13 +168,12 @@ nav ul {
 // Footer styling
 footer {
   opacity: 0;
-
   p {
       position: absolute;
       bottom: 0;
       margin: 25px;
       color: #fff;
-      z-index: 3;
+      z-index: 30;
   }
 }
 
@@ -191,12 +192,13 @@ footer {
   top: 73%;
   transform: translate(-50%, 0%);
   display: none;
+  pointer-events: none;
 }
 
 /* Temporary styling */
-.loading,
-.started,
-.player,
-footer {
-  display: none;
-}
+// .loading,
+// .started,
+// .player,
+// footer {
+//   display: none;
+// }

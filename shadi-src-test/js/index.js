@@ -52,14 +52,15 @@ renderer.setPixelRatio(3);
 // Controls, set initally to false when page is loaded
 const controls = new OrbitControls(mainCamera, canvas);
 setupControls();
+controls.enabled = false;
 
 // Mouse move tracking
 let mouse = new THREE.Vector2();
 window.addEventListener('mousemove', onMouseMove);
 
 // Audio setup
-const music = new Audio('sounds/christmas.mp3');
-music.volume = 0.00;
+const music = new Audio('sounds/silent-night.mp3');
+music.volume = 0.5;
 
 // Loaders setup
 const loadingManager = new THREE.LoadingManager(onLoadComplete, onProgress);
@@ -243,165 +244,167 @@ function onLoadComplete() {
       }
   });
 
-  // Animate footer
-  gsap.to(footer, {
-      delay: 0.5,
-      opacity: 1,
-      ease: Power1.easeIn,
-      duration: 0.5
-  });
-
   // Reveal the 'started' button with an animation
   gsap.to(started, {
-      delay: 0.9,
+      delay: 4,
       opacity: 1,
-      duration: 0.5
+      duration: 1
   });
 
   // Add an event listener to the 'startBtn' element
   startBtn.addEventListener('click', () => {
+      switchCamera('santaCamera');
+      gsap.to(footer, {opacity: 1, duration: 1});
       continueAnimation();
-      console.log('startBtn clicked');
-      
+      // console.log('startBtn clicked');
+      controls.enabled = true;
+      // console.log(controls.enabled);
+
       fetch('images.json')
-      .then(response => response.json())
-      .then(data => {
-        displayImagesAndText(data);
-      })
+          .then(response => response.json())
+          .then(data => {
+              displayImagesAndText(data);
+          })
   });
 
   function displayImagesAndText(data) {
-    // Create a group to hold the images and text
-    const imageGroup = new THREE.Group();
-    santaScene.add(imageGroup);
+      // Create a group to hold the images and text
+      const imageGroup = new THREE.Group();
+      santaScene.add(imageGroup);
 
-    const numImages = data.length;
-    const radius = 50; // Adjust the radius for spacing between images
-    const angleIncrement = (2 * Math.PI) / numImages;
+      const numImages = data.length;
+      const radius = 50; // Adjust the radius for spacing between images
+      const angleIncrement = (2 * Math.PI) / numImages;
 
-    // Get the position of the santa.glb model
-    const santaPosition = models[0].position;
+      // Get the position of the santa.glb model
+      const santaPosition = models[0].position;
 
-    data.forEach((item, index) => {
-      // Calculate the position of the image based on polar coordinates
-      const angle = angleIncrement * index;
-      const imageX = santaPosition.x + radius * Math.cos(angle);
-      const imageY = santaPosition.y * (index + 1); // Adjust the Y position
-      const imageZ = santaPosition.z + radius * Math.sin(angle);
+      data.forEach((item, index) => {
+          // Calculate the position of the image based on polar coordinates
+          const angle = angleIncrement * index;
+          const imageX = santaPosition.x + radius * Math.cos(angle);
+          const imageY = santaPosition.y * (index + 1); // Adjust the Y position
+          const imageZ = santaPosition.z + radius * Math.sin(angle);
 
-      // Load image texture
-      const texture = textureLoader.load(item.imageUrl);
+          // Load image texture
+          const texture = textureLoader.load(item.imageUrl);
 
-      // Create a plane with the image texture
-      const imagePlane = new THREE.Mesh(
-          new THREE.PlaneGeometry(10, 10), // Adjust the size as needed
-          new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
-      );
+          // Create a plane with the image texture
+          const imagePlane = new THREE.Mesh(
+              new THREE.PlaneGeometry(10, 10), // Adjust the size as needed
+              new THREE.MeshBasicMaterial({
+                  map: texture,
+                  side: THREE.DoubleSide
+              })
+          );
 
-      // Set the position and rotation of the image
-      imagePlane.position.set(imageX, imageY, imageZ);
-      imagePlane.lookAt(santaPosition);
+          // Set the position and rotation of the image
+          imagePlane.position.set(imageX, imageY, imageZ);
+          imagePlane.lookAt(santaPosition);
 
-      // Create a text sprite
-      const textSprite = createTextSprite(item.text, item.year);
+          // Create a text sprite
+          const textSprite = createTextSprite(item.text, item.year);
 
-      // Set the position of the text relative to the image
-      const textOffsetX = 5; // Adjust this value as needed
-      const textOffsetZ = 5;
-      textSprite.position.set(imageX + textOffsetX, imageY, imageZ + textOffsetZ);
+          // Set the position of the text relative to the image
+          const textOffsetX = 5; // Adjust this value as needed
+          const textOffsetZ = 5;
+          textSprite.position.set(imageX + textOffsetX, imageY, imageZ + textOffsetZ);
 
-      // Set the rotation of the text to match the image
-      textSprite.lookAt(santaPosition);
+          // Set the rotation of the text to match the image
+          textSprite.lookAt(santaPosition);
 
-      // Add the image and text to the group
-      imageGroup.add(imagePlane);
-      imageGroup.add(textSprite);
-    });
+          // Add the image and text to the group
+          imageGroup.add(imagePlane);
+          imageGroup.add(textSprite);
+      });
   }
-}
 
-function createTextSprite(text, year) {
-  // Create a canvas element to generate the text sprite
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
-  canvas.width = 800;
-  canvas.height = 600;
 
-  // Customize the appearance of the text
-  context.font = '60px Arial'; // Adjust font size and style as needed
-  context.fillStyle = 'white'; // Adjust text color as needed
-  context.textAlign = 'center';
+  function createTextSprite(text, year) {
+      // Create a canvas element to generate the text sprite
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      canvas.width = 800;
+      canvas.height = 600;
 
-  // Split the text into words
-  const words = text.split(' ');
+      // Customize the appearance of the text
+      context.font = '60px Arial'; // Adjust font size and style as needed
+      context.fillStyle = 'white'; // Adjust text color as needed
+      context.textAlign = 'center';
 
-  // Calculate the maximum number of words that can fit in a line
-  const maxWordsPerLine = 5; // Adjust as needed
+      // Split the text into words
+      const words = text.split(' ');
 
-  // Calculate the maximum number of lines that can fit in the canvas
-  const maxLines = 2; // Adjust as needed
+      // Calculate the maximum number of words that can fit in a line
+      const maxWordsPerLine = 5; // Adjust as needed
 
-  // Calculate the maximum number of words that can fit in the text sprite
-  const maxWords = maxWordsPerLine * maxLines;
+      // Calculate the maximum number of lines that can fit in the canvas
+      const maxLines = 2; // Adjust as needed
 
-  // Create an array to store the lines of text
-  const lines = [];
+      // Calculate the maximum number of words that can fit in the text sprite
+      const maxWords = maxWordsPerLine * maxLines;
 
-  // Iterate through the words and create lines of text
-  let currentLine = '';
-  for (let i = 0; i < words.length; i++) {
-    const word = words[i];
-    const testLine = currentLine + word + ' ';
-    const metrics = context.measureText(testLine);
-    const lineWidth = metrics.width;
+      // Create an array to store the lines of text
+      const lines = [];
 
-    if (lineWidth > canvas.width && i > 0) {
+      // Iterate through the words and create lines of text
+      let currentLine = '';
+      for (let i = 0; i < words.length; i++) {
+          const word = words[i];
+          const testLine = currentLine + word + ' ';
+          const metrics = context.measureText(testLine);
+          const lineWidth = metrics.width;
+
+          if (lineWidth > canvas.width && i > 0) {
+              lines.push(currentLine);
+              currentLine = word + ' ';
+          } else {
+              currentLine = testLine;
+          }
+
+          if (lines.length >= maxLines) {
+              break;
+          }
+      }
+
+      // Push the remaining words as the last line
       lines.push(currentLine);
-      currentLine = word + ' ';
-    } else {
-      currentLine = testLine;
-    }
 
-    if (lines.length >= maxLines) {
-      break;
-    }
+      // Draw the lines of text on the canvas
+      const lineHeight = 60; // Adjust line height as needed
+      const startY = (canvas.height - (lines.length * lineHeight)) / 2;
+      for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          const y = startY + (i * lineHeight);
+          context.fillText(line, canvas.width / 2, y);
+      }
+
+      // Draw the year underneath the text
+      context.font = '40px Arial'; // Adjust font size and style as needed
+      const yearLineHeight = 40; // Adjust line height for the year
+      const yearY = startY + (lines.length * lineHeight) + yearLineHeight; // Adjust the vertical position of the year
+      context.fillText(year, canvas.width / 2, yearY);
+
+      // Create a texture from the canvas
+      const texture = new THREE.CanvasTexture(canvas);
+
+      // Create a sprite with the texture
+      const spriteMaterial = new THREE.MeshBasicMaterial({
+          map: texture,
+          side: THREE.DoubleSide
+      });
+      const spriteGeometry = new THREE.PlaneGeometry(10, 10);
+      const spriteMesh = new THREE.Mesh(spriteGeometry, spriteMaterial);
+
+      // Scale the sprite to match the canvas size
+      spriteMesh.rotateX(180);
+
+      return spriteMesh;
   }
 
-  // Push the remaining words as the last line
-  lines.push(currentLine);
-
-  // Draw the lines of text on the canvas
-  const lineHeight = 60; // Adjust line height as needed
-  const startY = (canvas.height - (lines.length * lineHeight)) / 2;
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const y = startY + (i * lineHeight);
-    context.fillText(line, canvas.width / 2, y);
-  }
-
-  // Draw the year underneath the text
-  context.font = '40px Arial'; // Adjust font size and style as needed
-  const yearLineHeight = 40; // Adjust line height for the year
-  const yearY = startY + (lines.length * lineHeight) + yearLineHeight; // Adjust the vertical position of the year
-  context.fillText(year, canvas.width / 2, yearY);
-
-  // Create a texture from the canvas
-  const texture = new THREE.CanvasTexture(canvas);
-
-  // Create a sprite with the texture
-  const spriteMaterial = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
-  const spriteGeometry = new THREE.PlaneGeometry(10, 10);
-  const spriteMesh = new THREE.Mesh(spriteGeometry, spriteMaterial);
-
-  // Scale the sprite to match the canvas size
-  spriteMesh.rotateX(180);
-
-  return spriteMesh;
+  // Setting a timeout to ensure that certain actions only happen after the rest of the script has loaded
+  setTimeout(() => {}, 50);
 }
-
-// Setting a timeout to ensure that certain actions only happen after the rest of the script has loaded
-setTimeout(() => {
-}, 50);
 
 function onProgress(itemUrl, itemsLoaded, itemsTotal) {
   // Update progress for loading resources
@@ -487,13 +490,6 @@ function setupLighting() {
   santaScene.add(pointLight);
 }
 
-function setupRenderer() {
-  // Configure the WebGL renderer
-  renderer.setSize(sizes.width, sizes.height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.autoClear = false;
-}
-
 function continueAnimation() {
   // Music and sounds here, continuous playing
   music.loop = true;
@@ -565,6 +561,8 @@ function onClosePlayer() {
 // Function switches between cameras when "Enter Museum" button is clicked
 function switchCamera(cameraToSelect) {
   if (cameraToSelect === 'santaCamera') {
+    controls.object = santaCamera;
+    santaScene.add(particles);
     renderer.camera = santaCamera;
     renderer.scene = santaScene;
 
@@ -576,9 +574,8 @@ function switchCamera(cameraToSelect) {
     navBar.style.display = 'none';
     titleImage.style.display = 'none';
     vignetteDiv.style.display = 'none';
-
-    animate();
   } else {
+    controls.object = mainCamera;
     renderer.camera = mainCamera;
     renderer.scene = snowScene;
   }
@@ -628,10 +625,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const navBar = document.querySelector('.nav-bar');
   const titleImage = document.querySelector('.title-image');
 
-  if (navBar && titleImage) {
-    navBar.style.display = 'flex';
-    titleImage.style.display = 'block';
-  }
+  navBar.style.display = 'flex';
+  titleImage.style.display = 'block';
 });
 
 // Timeline magic *****************************************************
@@ -644,7 +639,7 @@ tl.fromTo(leftMountainFgMesh.position, { x: -290 }, { x: -98, delay: -.8 });
 tl.fromTo(middleMountainMesh.position, { y: -200 }, { y: -72, delay: -.5 });
 tl.fromTo(rightMountainPreFgMesh.position, { y: -180 }, { y: -49.5, delay: -.7 });
 
-// Title and nav bar animation
+// Title, nav bar, and footer animation
 tl.fromTo('.nav-bar', {y: "-100%"}, {y: "0%"});
 tl.fromTo('.title-image', {opacity: 0}, {opacity: 1, delay: -.6});
 
@@ -685,9 +680,5 @@ tl.eventCallback("onComplete", () => {
       meshElement.position.set(newX, newY, meshElement.position.z);
     });
   });
-
-  window.addEventListener("mousedown", (e) => {
-    switchCamera('santaCamera');
-  })
 });
 // ********************************************************************
