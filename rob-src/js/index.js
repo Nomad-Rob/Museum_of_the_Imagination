@@ -77,9 +77,6 @@ debugObject.envMapIntensity = 2;
 const camera = setupCamera();
 scene.add(camera);
 
-// Background camera setup (Orthographic)
-const backgroundCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, -1, 0);
-
 // Controls setup
 const controls = new OrbitControls(camera, canvas);
 setupControls();
@@ -109,12 +106,6 @@ function onWindowResize() {
   // Update camera aspect ratio
   camera.aspect = sizesCanvas.width / sizesCanvas.height;
   camera.updateProjectionMatrix();
-  // Update background camera aspect ratio
-  backgroundCamera.left = -sizesCanvas.width / 2;
-  backgroundCamera.right = sizesCanvas.width / 2;
-  backgroundCamera.top = sizesCanvas.height / 2;
-  backgroundCamera.bottom = -sizesCanvas.height / 2;
-  backgroundCamera.updateProjectionMatrix();
 
   renderer.setSize(sizesCanvas.width, sizesCanvas.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -183,15 +174,16 @@ function onLoadComplete() {
   
   
   function createCylinder() {
-    const radius = 16;
-    const height = 80;
+    const radius = 10;
+    const height = 180;
     const radialSegments = 32; // Number of segments around the cylinder
 
     const geometry = new THREE.CylinderGeometry(radius, radius, height, radialSegments);
     const material = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide, transparent: true, opacity: 0.3 });
     cylinder = new THREE.Mesh(geometry, material);
-    cylinder.position.set(0, -33, 0); // Set the position of the cylinder's bottom
+    cylinder.position.set(0, -133, 0); // Set the position of the cylinder's bottom
     cylinder.rotation.y = Math.PI / 2; // Rotate 90 degrees on the x-axis
+    // cylinder.rotation.z = 30;
     scene.add(cylinder);
   }
     
@@ -210,28 +202,29 @@ function onLoadComplete() {
         new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
       );
 
-      // Position the image around the cylinder
+      // Position the image around the cylinder in a spiral
       const theta = (spacing * index) / cylinder.geometry.parameters.radiusTop; // Angle along the cylinder
-      const imageX = cylinder.geometry.parameters.radiusTop * Math.cos(theta);
-      const imageY = Math.sin(theta) * 30; // Adjust the amplitude of the y-axis movement
-      const imageZ = cylinder.geometry.parameters.radiusTop * Math.sin(theta);
+      const spiralHeight = index * 8; // Adjust the amplitude of the y-axis movement
+      const imageX = cylinder.geometry.parameters.radiusTop * Math.cos(theta) -1.3;
+      const imageY = spiralHeight;
+      const imageZ = cylinder.geometry.parameters.radiusTop * Math.sin(theta) -1.3;
       imagePlane.position.set(imageX, imageY, imageZ);
-      imagePlane.lookAt(cylinder.position);
+      imagePlane.lookAt(0, spiralHeight, 0);
 
       
-      // 
+      // Create text sprite
       const textSprite = createTextSprite(item.text, item.year);
       const textOffset = 1;
       textSprite.position.set(imageX + textOffset, imageY, imageZ + textOffset);
-      textSprite.lookAt(cylinder.position);
+      textSprite.lookAt(0, spiralHeight, 0);
       
-      window.addEventListener('wheel', (event) => {
-        console.log('Relooking at Santa');
-        imagePlane.lookAt(santaPosition.x, santaPosition.y + 5.5, santaPosition.z);
-        imagePlane.rotation.y += Math.PI;
-        textSprite.lookAt(santaPosition.x, santaPosition.y + 5.5, santaPosition.z);
-        textSprite.rotation.y += Math.PI;
-      })
+      // window.addEventListener('wheel', (event) => {
+      //   console.log('Relooking at Santa');
+      //   imagePlane.lookAt(santaPosition.x, santaPosition.y + 5.5, santaPosition.z);
+      //   imagePlane.rotation.y += Math.PI;
+      //   textSprite.lookAt(santaPosition.x, santaPosition.y + 5.5, santaPosition.z);
+      //   textSprite.rotation.y += Math.PI;
+      // })
 
       // Create a group for the image and text and add to the cylinder
       const imageGroup = new THREE.Group();
@@ -317,8 +310,8 @@ window.addEventListener('wheel', (event) => {
 
     // Rotate the images and text around Santa
     const rotationAmount = 0.01; // Adjust this value to control the rotation speed
-    const rotationDirection = deltaY < 0 ? 1 : -1; // Determine rotation direction
-    const rotationAngle = rotationAmount * rotationDirection;
+    const rotationDirection = deltaY < 0 ? -1 : 1; // Determine rotation direction
+    const rotationAngle = rotationAmount * -rotationDirection;
 
     models.forEach(model => {
         model.rotation.y += rotationAngle; // Rotate the models
@@ -327,14 +320,14 @@ window.addEventListener('wheel', (event) => {
     imageGroup.rotation.y += rotationAngle * 10; // Rotate the image group
 
     // Move the image group up or down
-    const verticalMovementSpeed = 0.5; // Adjust this value to control the speed of vertical movement
+    const verticalMovementSpeed = 0.2; // Adjust this value to control the speed of vertical movement
     imageGroupYPosition += rotationDirection * verticalMovementSpeed;
     imageGroup.position.y = imageGroupYPosition;
     
     // Move the cylinder up or down on the y-axis
     cylinder.position.y += rotationDirection * verticalMovementSpeed;
     // rotate the cylinder
-    cylinder.rotation.y += rotationAngle * 20;
+    cylinder.rotation.y += rotationAngle * 16;
 
     
 });
@@ -360,9 +353,6 @@ function loadModels() {
           gltf.scene.position.x = 0;
           gltf.scene.rotation.x = 0;
           // gltf.scene.rotation.y = initialRotationMeshY 0
-          
-          // Focus camera on Santa
-        camera.lookAt(gltf.scene.position);
 
           scene.add(gltf.scene);
           models.push(gltf.scene);
@@ -410,23 +400,18 @@ function initializeCanvas() {
   camera.aspect = sizesCanvas.width / sizesCanvas.height;
   camera.updateProjectionMatrix();
 
-  backgroundCamera.left = -sizesCanvas.width / 2;
-  backgroundCamera.right = sizesCanvas.width / 2;
-  backgroundCamera.top = sizesCanvas.height / 2;
-  backgroundCamera.bottom = -sizesCanvas.height / 2;
-  backgroundCamera.updateProjectionMatrix();
-
   renderer.setSize(sizesCanvas.width, sizesCanvas.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 }
 
 function setupCamera() {
   // Set up and return the main camera
-  const camera = new THREE.PerspectiveCamera(80, sizesCanvas.width / sizesCanvas.height, 0.1, 250);
+  const camera = new THREE.PerspectiveCamera(69, sizesCanvas.width / sizesCanvas.height, 0.1, 250);
   camera.name = 'Main Camera';
   camera.position.x = 0;
-  camera.position.y = 5;
-  camera.position.z = 30;
+  camera.position.y = 0;
+  camera.position.z = 23;
+  camera.lookAt(0, 0, 0);
   return camera;
 }
 
@@ -475,8 +460,8 @@ function continueAnimation() {
   gsap.to(camera.position, {
       delay: 1,
       x: 0,
-      y: 5,
-      z: 22,
+      y: 0,
+      z: 19,
       duration: 1
   });
   
