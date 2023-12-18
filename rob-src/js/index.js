@@ -16,6 +16,10 @@ const loading = document.querySelector('.loading');
 const started = document.querySelector('.started');
 const startedBtn = document.querySelector('.started-btn');
 let imageGroup = new THREE.Group();
+let imageGroupYPosition = 0; // Global variable to track the Y position of the image group
+let scrollPosition = 0; // Tracks the scroll position
+
+
 
 // Debug object for future enhancements
 const debugObject = {};
@@ -178,43 +182,50 @@ function onLoadComplete() {
   });
 
 function displayImagesAndText(data) {
-  imageGroup = new THREE.Group();
-  scene.add(imageGroup);
+    imageGroup = new THREE.Group();
+    scene.add(imageGroup);
+    const minDistance = 25; // Minimum distance between images
+    const santaPosition = models[1].position;
+    
+    let yOffset = 0; // Offset for subsequent images on the Y-axis
 
-  const numImages = data.length;
-  const radius = 12; // Set the radius to 18
-  const minDistance = 25; // Set the minimum distance between images to 80
-  const angleIncrement = (2 * Math.PI) / numImages;
-  const santaPosition = models[0].position;
+    data.forEach((item, index) => {
+        let imageX, imageY, imageZ;
 
-  data.forEach((item, index) => {
-      const angle = angleIncrement * index;
-      const distance = radius + (minDistance * index); // Calculate the distance from the santaPosition
-      const imageX = santaPosition.x + distance * Math.cos(angle);
-      const imageY = santaPosition.y * (index + 1);
-      const imageZ = santaPosition.z + distance * Math.sin(angle);
+        if (index === 0) {
+            // Position the first image at the same X and Y as Santa, but 15 units away on the Z-axis
+            imageX = santaPosition.x;
+            imageY = santaPosition.y + 5;
+            imageZ = santaPosition.z + 15;
+        } else {
+            // Position subsequent images 15 units below on the Y-axis and at least 25 units away from each other
+            imageX = santaPosition.x + minDistance * index;
+            imageY = santaPosition.y - yOffset;
+            imageZ = santaPosition.z + 15;
+            yOffset += 15; // Increase the Y offset for the next image
+        }
 
-      const texture = textureLoader.load(item.imageUrl);
-      const imagePlane = new THREE.Mesh(
-          new THREE.PlaneGeometry(10, 10),
-          new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
-      );
-      imagePlane.position.set(imageX, imageY, imageZ);
-      imagePlane.lookAt(santaPosition);
-      imagePlane.rotation.y += Math.PI;
+        const texture = textureLoader.load(item.imageUrl);
+        const imagePlane = new THREE.Mesh(
+            new THREE.PlaneGeometry(10, 10),
+            new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
+        );
+        imagePlane.position.set(imageX, imageY, imageZ);
+        imagePlane.lookAt(santaPosition);
+        imagePlane.rotation.y += Math.PI;
 
-      const textSprite = createTextSprite(item.text, item.year);
-      const textOffsetX = 1;
-      const textOffsetZ = 0;
-      textSprite.position.set(imageX + textOffsetX, imageY, imageZ + textOffsetZ);
-      textSprite.lookAt(santaPosition);
-      textSprite.rotation.y += Math.PI;
-      
+        const textSprite = createTextSprite(item.text, item.year);
+        const textOffsetX = 1;
+        const textOffsetZ = 1;
+        textSprite.position.set(imageX + textOffsetX, imageY, imageZ + textOffsetZ);
+        textSprite.lookAt(santaPosition);
+        textSprite.rotation.y += Math.PI;
 
-      imageGroup.add(imagePlane);
-      imageGroup.add(textSprite);
-  });
+        imageGroup.add(imagePlane);
+        imageGroup.add(textSprite);
+    });
 }
+
 
 function createTextSprite(text, year) {
     const canvas = document.createElement('canvas');
@@ -280,20 +291,27 @@ setTimeout(() => {
 }, 50);
 }
 
+
+// SCROLLING EVENTS = Not fun!!!!!
 window.addEventListener('wheel', (event) => {
-  console.log('wheel event');
-  const deltaY = event.deltaY;
-  
-  // Rotate the camera around the scene
-  const rotationAmount = 0.01; // Adjust this value to control the rotation speed
-  const rotationDirection = deltaY < 0 ? 1 : -1; // Adjust this value to control the rotation direction
-  const rotationAngle = rotationAmount * rotationDirection;
+    console.log('wheel event');
+    const deltaY = event.deltaY;
 
-  models.forEach(model => {
-    model.rotation.y += rotationAngle; // Adjust this value to control the rotation speed of the models
-  });
+    // Rotate the camera around the scene
+    const rotationAmount = 0.01; // Adjust this value to control the rotation speed
+    const rotationDirection = deltaY < 0 ? 1 : -1; // Determine rotation direction
+    const rotationAngle = rotationAmount * rotationDirection;
 
-  imageGroup.rotation.y += rotationAngle * 10; // Adjust this value to control the rotation speed of the images
+    models.forEach(model => {
+        model.rotation.y += rotationAngle; // Rotate the models
+    });
+
+    imageGroup.rotation.y += rotationAngle * 10; // Rotate the image group
+
+    // Move the image group up or down
+    const verticalMovementSpeed = 0.5; // Adjust this value to control the speed of vertical movement
+    imageGroupYPosition += rotationDirection * verticalMovementSpeed;
+    imageGroup.position.y = imageGroupYPosition;
 });
 
 
@@ -433,7 +451,7 @@ function continueAnimation() {
       delay: 1,
       x: 0,
       y: 5,
-      z: 18,
+      z: 22,
       duration: 1
   });
   
