@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clausville Creative Gift Shop</title>
+    <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+
+    <!--START NAVIGATION-->
+    <nav>
+        <div class="navigation">
+        <div class="navigation__nav">
+            <div class="navigation__logo">
+            <a href="#">
+                <img src="../src/images/logo.png" alt="logo"
+            /></a>
+            <div class="navigation__cart">
+                <a href="#" class="navigation__cart-link">Cart</a>
+            </div>
+            </div>
+
+            <div class="navigation__control">
+            <button
+                class="navigation__button"
+                aria-label="menu"
+                aria-expanded="false"
+                aria-controls="menu-list"
+            >
+                <span class="navigation__icon navigation" aria-hidden="true"
+                >&nbsp;</span
+                >
+            </button>
+            </div>
+        </div>
+        <div class="navigation__menu" id="menu-list">
+            <ul class="navigation__list" hidden>
+            <li class="navigation__list-item">
+                <a href="#" class="navigation__link">Home</a>
+            </li>
+            <li class="navigation__list-item">
+                <a href="#search" class="navigation__link">Search</a>
+            </li>
+            <li class="navigation__list-item">
+                <a href="#shop" class="navigation__link">Shop</a>
+            </li>
+            <li class="navigation__list-item">
+                <a href="#deal" class="navigation__link">Deals of the day</a>
+            </li>
+            <li class="navigation__list-item">
+                <a href="#feedback" class="navigation__link">Happy Clients</a>
+            </li>
+            <li class="navigation__list-item">
+                <a href="#about" class="navigation__link">About</a>
+            </li>
+            <li class="navigation__list-item">
+                <a href="#contact" class="navigation__link">Contact</a>
+            </li>
+            <li class="navigation__list-item">
+                <a href="#" class="navigation__link">Cart</a>
+            </li>
+            </ul>
+        </div>
+        </div>
+    </nav>
+
+    <!--END NAVIGATION-->
+
+    <!--START HEADER-->
+
+    <header>
+        <div class="header">
+        <h1 class="heading__primary">
+            Clausville <span class="heading__primary--accent">Creative</span>
+        </h1>
+        <a href="#shop" class="btn__primary header__btn">
+            Go Shop
+        </a>
+        </div>
+    </header>
+
+    <!--END HEADER-->
+    <main>
+        <!--START SEARCH-->
+
+        <section class="search" id="search">
+        <div class="search__title">
+            <h3 class="shop__title heading__tertiary">Search Products</h3>
+        </div>
+        <div class="search__form">
+            <form action="">
+            <label for="searchinput">Search Product:</label>
+            <input type="text" class="search__input" id="searchinput" />
+            <button class="btn__primary search__button" type="submit">
+                Search
+            </button>
+            </form>
+        </div>
+        </section>
+
+        <!--END SEARCH-->
+
+        <!--START SHOP-->
+        <section class="shop" id="shop">
+        <h2 class="heading__secondary">Shop by category</h2>
+        <div class="shop__card">
+            <img src="https://i.postimg.cc/L68FT7PD/books-small.jpg" alt="books" class="shop__img" />
+            <h3 class="shop__title heading__tertiary">Books</h3>
+            <p class="shop__text">
+            Cozy Christmas Books for everyone. Choose the perfect book to
+            gift...
+            </p>
+            <a href="" class="btn__primary shop__btn">Shop Books</a>
+        </div>
+
+        <div class="shop__card">
+            <img
+            src="https://i.postimg.cc/N01nY7TL/spices-small.jpg"
+            alt="winter spices"
+            class="shop__img"
+            />
+            <h3 class="shop__title heading__tertiary">Winter Spices</h3>
+            <p class="shop__text">
+            A touch of winter with the best quality spices in elegant
+            wrapping...
+            </p>
+            <a href="" class="btn__primary shop__btn">Shop Spices</a>
+        </div>
+        <div class="shop__card">
+            <img
+            src="https://i.postimg.cc/NFNVSsX4/letterset-small.jpg"
+            alt="letter set"
+            class="shop__img"
+            />
+            <h3 class="shop__title heading__tertiary">Letter Sets</h3>
+            <p class="shop__text">
+            Vintage letter Sets that speak of Christmas to wrote to your firend
+            and family ..
+            </p>
+            <a href="" class="btn__primary shop__btn">Shop Letter Sets</a>
+        </div>
+
+        <div class="shop__card">
+            <img src="https://i.postimg.cc/2y2RYdsn/art-small.jpg" alt="art" class="shop__img" />
+            <h3 class="shop__title heading__tertiary">Art</h3>
+            <p class="shop__text">
+            The best art supplies from beginners to professionals...
+            </p>
+            <a href="" class="btn__primary shop__btn">Shop Art</a>
+        </div>
+        <div class="shop__card">
+            <img src="https://i.postimg.cc/nzpPLjY2/teaset-small.jpg" alt="tea sets" class="shop__img" />
+            <h3 class="shop__title heading__tertiary">Tea Sets</h3>
+            <p class="shop__text">
+            The finest porcelains for cozy tea sets to warm you up in the
+            coldest days...
+            </p>
+            <a href="" class="btn__primary shop__btn">Shop Tea Sets</a>
+        </div>
+        <div class="shop__card">
+            <img src="https://i.postimg.cc/pr2b3c62/biscuits-small.jpg" alt="biscuits" class="shop__img" />
+            <h3 class="shop__title heading__tertiary">Biscuits</h3>
+            <p class="shop__text">
+            What better than a tin of fragrant biscuits on christmas morrnig?...
+            </p>
+            <a href="" class="btn__primary shop__btn">Shop Biscuits</a>
+        </div>
+        </section>
+        <!--END SHOP-->
+
+        <!--START DEALS-->
+
+        <section class="deal" id="deal">
+        <h2 class="heading__secondary heading__secondary--dark">
+            Deals of the day
+        </h2>
+        <div class="deal__card">
+            <div class="deal__box">
+            <img src="https://i.postimg.cc/8P09bCNk/teapot-small.jpg" alt="teapot" class="deal__img" />
+            <h3 class="heading__tertiary deal__title heading__tertiary--dark ">
+                Tea Set
+            </h3>
+            </div>
+            <div class="deal__content">
+            <ul class="deal__text">
+                <li>Bamboo tea set</li>
+                <li>Set of 6 pieces</li>
+                <li>Hand carved</li>
+            </ul>
+            <a href="" class="deal__btn btn__primary">go buy</a>
+            </div>
+        </div>
+        <div class="deal__card">
+            <div class="deal__box">
+            <img
+                src="https://i.postimg.cc/brYWmDZr/cinnamonbiscuits-small.jpg"
+                alt="cinnamon biscuits"
+                class="deal__img"
+            />
+            <h3 class="heading__tertiary heading__tertiary--dark deal__title">
+                Cinnamon biscuits
+            </h3>
+            </div>
+            <div class="deal__content">
+            <ul class="deal__text">
+                <li>Cinnamon biscuits</li>
+                <li>Box of 32</li>
+                <li>With elegant wrapping</li>
+            </ul>
+            <a href="" class="deal__btn btn__primary">go buy</a>
+            </div>
+        </div>
+        </section>
+
+        <!--END DEALS-->
+        <!--START HAPPY CLIENTS-->
+
+        <section class="happyclients" id="feedback">
+        <h2 class="heading__secondary happyclients__title">Happy Clients</h2>
+        <div class="happyclients__box">
+            <div class="happyclients__content">
+            <div class="happyclients__card">
+                <img
+                src="https://i.postimg.cc/YSg50wcr/happyclient1.jpg"
+                alt="amy"
+                class="happyclients__img"
+                />
+                <blockquote class="happyclients__text">
+                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Itaque
+                officia commodi labore saepe dolor molestiae assumenda sequi
+                facere architecto. Eum.
+                </blockquote>
+            </div>
+            <div class="happyclients__card">
+                <img
+                src="https://i.postimg.cc/xC2WbFYK/happyclient2.jpg"
+                alt="jodie"
+                class="happyclients__img"
+                />
+                <blockquote class="happyclients__text">
+                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ut
+                vitae obcaecati delectus debitis iusto dolorem repudiandae eius
+                recusandae corporis voluptatum!
+                </blockquote>
+            </div>
+            <div class="happyclients__card">
+                <img
+                src="https://i.postimg.cc/dtNPSBmY/happyclient3.jpg"
+                alt="harry"
+                class="happyclients__img"
+                />
+                <blockquote class="happyclients__text">
+                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Animi
+                nam aperiam dolor fugit fugiat ad accusantium doloremque cum
+                debitis officia.
+                </blockquote>
+            </div>
+            <div class="happyclients__card">
+                <img
+                src="https://i.postimg.cc/85mxdBPx/happyclient4.jpg"
+                alt="jodie"
+                class="happyclients__img"
+                />
+                <blockquote class="happyclients__text">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                Reiciendis alias vitae aliquam eligendi totam quidem quod
+                nesciunt atque unde aspernatur.
+                </blockquote>
+            </div>
+            <div class="happyclients__arrows">
+                <button class="happyclients__arrows--left">&#8249;</button>
+                <button class="happyclients__arrows--right">&#8250;</button>
+            </div>
+            <div class="happyclients__dots">
+                <span class="happyclients__dot"></span>
+                <span class="happyclients__dot"></span>
+                <span class="happyclients__dot"></span>
+                <span class="happyclients__dot"></span>
+            </div>
+            </div>
+        </div>
+        </section>
+
+        <!--END HAPPY CLIENTS-->
+        <!--START ABOUT-->
+        <section class="about" id="about">
+        <h2 class="heading__secondary heading__secondary--dark">About Us</h2>
+        <div class="about__box">
+            <h3 class="heading__tertiary">Our Story</h3>
+            <p class="about__text">
+                Nestled in the enchanting frost-kissed landscape of the North Pole, Clausville Creative stands as a mesmerizing testament to the enduring legacy of Santa Claus. This unique museum, a dazzling jewel in the icy realms, invites visitors from around the world to embark on a magical journey through the storied history of Santa Claus. Within its walls, the spirit of Christmas comes alive as guests explore an extensive collection of artifacts, photographs, and interactive exhibits. Each gallery is meticulously curated to depict the evolution of Santa Claus through the ages, from his earliest origins to the beloved figure he is today. Visitors can marvel at the rich tapestry of stories, traditions, and folklore surrounding Santa, gaining a deeper appreciation for the joy and wonder he brings to every corner of the globe.
+            </p>
+
+            <p class="about__text">
+                But the wonders of Clausville Creative extend beyond the exhibits. Our on-site gift shop offers an exclusive array of North Pole treasures, each item imbued with the magic and charm of Santa's world. From handcrafted toys and festive ornaments to unique apparel and souvenirs, every piece in our collection is a reflection of the North Pole's enchanting essence. These keepsakes are not just mementos; they're tangible connections to the heartwarming joy and generosity that Santa Claus represents. Whether you're seeking the perfect Christmas gift or a special token to remember your visit, the Clausville Creative gift shop is a trove of extraordinary finds, ensuring that the spirit of Christmas stays with you all year round.
+
+                Welcome to Clausville Creative, where the legacy of Santa Claus is celebrated and cherished, and the magic of the North Pole is just a step away. Join us in this wondrous exploration and be part of an unforgettable experience that will fill your heart with the timeless joy of Christmas.
+            </p>
+        </div>
+        </section>
+
+        <!--END ABOUT-->
+        <footer>
+        <!--START CONTACT-->
+        <section class="contact" id="contact">
+            <h2 class="heading__secondary">Contact Us</h2>
+            <div class="contact__box ">
+            <h3
+                class="heading__tertiary heading__tertiary--transparent contact__subtitle"
+            >
+                Send a Message
+            </h3>
+            <form action="" class="contact__form">
+                <label for="name" class="contact__label">First Name</label>
+                <input type="text" id="name" class="contact__input" />
+                <label for="lastname" class="contact__label">Last Name</label>
+                <input
+                type="text"
+                id="lastname"
+                class="contact__input"
+                class="contact__label"
+                />
+                <label for="email" class="contact__label">Email</label>
+                <input type="email" id="email" class="contact__input" />
+                <label for="message" class="contact__label">Your Message</label>
+                <textarea
+                name="messgae"
+                id="message"
+                cols="30"
+                rows="10"
+                class="contact__input"
+                ></textarea>
+                <input type="submit" class="btn__submit" />
+            </form>
+            </div>
+            <div class="contact__box contact__large">
+            <div class=" contact__follow">
+                <h3
+                class="heading__tertiary heading__tertiary--transparent contact__subtitle"
+                >
+                Follow Us
+                </h3>
+                <div class="contact__icons">
+                <a href="#" class="contact__icon">
+                    <img src="https://i.postimg.cc/RCRzw9Wq/facebook.png" alt="facebook"
+                /></a>
+                <a href="#" class="contact__icon">
+                    <img src="https://i.postimg.cc/K8dXm8Hp/instagram.png" alt="instagram"
+                /></a>
+                <a href="" class="contact__icon">
+                    <img src="https://i.postimg.cc/9X1vrpk7/twitter.png" alt="twitter"
+                /></a>
+                <a href="" class="contact__icon">
+                    <img src="https://i.postimg.cc/FsRwcStn/whatsapp.png" alt="whatsapp"
+                /></a>
+                </div>
+            </div>
+            <div class="contact__follow">
+                <h3
+                class="heading__tertiary heading__tertiary--transparent contact__subtitle"
+                >
+                Subscribe
+                </h3>
+                <p class="contact__mailing">
+                If you want to know about our latest products and daily deal
+                subscribe to our newsletter!
+                </p>
+                <form action="" class="contact__form contact__mailing-form">
+                <label for="maillist" class="contact__label"
+                    >Mailing List:</label
+                >
+                <input
+                    id="maillist"
+                    type="email"
+                    class="contact__input"
+                    placeholder="Enter email"
+                />
+                <input type="submit" class="btn__submit" />
+                </form>
+            </div>
+            </div>
+        </section>
+
+        <!--END CONTACT-->
+        </footer>
+  </main>
+    <script src="./script.js"></script>
+</body>
+</html>
