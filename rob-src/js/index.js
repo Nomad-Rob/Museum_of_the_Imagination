@@ -217,8 +217,8 @@ function onLoadComplete() {
       
       // Create text sprite
       const textSprite = createTextSprite(item.text, item.year);
-      const textOffset = 1;
-      textSprite.position.set(imagePlane.position.x, imagePlane.position.y, imagePlane.position.z - textOffset);
+      const textOffset = -2; // Adjust the offset of the z-axis position
+      textSprite.position.set(imagePlane.position.x, imagePlane.position.y, imagePlane.position.z + textOffset);
       textSprite.lookAt(0, spiralHeight, 0);
       textSprite.rotation.y += Math.PI;
 
@@ -230,22 +230,14 @@ function onLoadComplete() {
     });
 }
 
-
-
-
-
 function createTextSprite(text, year) {
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
-  canvas.width = 800;
-  canvas.height = 600;
-
-  context.globalAlpha = 0.0; // Fully transparent
-  context.fillStyle = 'rgba(0, 0, 0, 0)'; // Transparent fill
-  context.fillRect(0, 0, canvas.width, canvas.height);
+  canvas.width = 1600;
+  canvas.height = 1300;
 
   context.globalAlpha = 1.0;
-  context.font = '60px Arial';
+  context.font = 'bold 60px Arial';
   context.fillStyle = 'white';
   context.textAlign = 'center';
 
@@ -272,15 +264,16 @@ function createTextSprite(text, year) {
   lines.push(currentLine);
 
   const lineHeight = 60;
-  const startY = (canvas.height - (lines.length * lineHeight)) / 2;
+  // Adjust startY to position the text higher up on the canvas
+  const startY = canvas.height / 4; // For example, start at 1/4th the height of the canvas
   for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       const y = startY + (i * lineHeight);
       context.fillText(line, canvas.width / 2, y);
   }
 
-  context.font = '40px Arial';
-  const yearLineHeight = 40;
+  context.font = 'bold 60px Arial';
+  const yearLineHeight = 60;
   const yearY = startY + (lines.length * lineHeight) + yearLineHeight;
   context.fillText(year, canvas.width / 2, yearY);
 
@@ -291,6 +284,7 @@ function createTextSprite(text, year) {
 
   return spriteMesh;
 }
+
 
 // Optional: Setting a timeout for certain actions, if necessary
 setTimeout(() => {
@@ -324,8 +318,7 @@ window.addEventListener('wheel', (event) => {
     cylinder.position.y += rotationDirection * verticalMovementSpeed;
     // rotate the cylinder
     cylinder.rotation.y += rotationAngle * 16;
-
-    
+  
 });
 
 
@@ -414,7 +407,7 @@ function setupCamera() {
 function setupControls() {
   // Set up orbit controls
   controls.enabled = true;
-  controls.enableRotate = false;
+  controls.enableRotate = true;
   controls.enablePan = false;
   controls.enableZoom = false;
 }
