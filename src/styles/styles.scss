@@ -173,12 +173,22 @@ footer {
       bottom: 0;
       margin: 25px;
       color: #fff;
-      z-index: 30;
+      z-index: 31;
   }
 }
 
 /* Image styling */
 .logo-image {
+  width: 99px;
+  height: 83px;
+  z-index: 30;
+}
+
+.logo-image-canvas {
+  display: none;
+  position: absolute;
+  top: 33px;
+  left: 126px;
   width: 99px;
   height: 83px;
   z-index: 30;
