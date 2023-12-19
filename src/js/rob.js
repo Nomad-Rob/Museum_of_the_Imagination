@@ -382,8 +382,6 @@ function loadModels() {
     );
 }
 
-
-
 function initializeCanvas() {
     // Initialize the canvas size and camera settings
     camera.aspect = sizesCanvas.width / sizesCanvas.height;
@@ -420,7 +418,7 @@ function setupLighting() {
     const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
     scene.add(ambientLight);
 
-    const pointLight = new THREE.PointLight(0xffffff, 15);
+    const pointLight = new THREE.PointLight(0xffffff, 1);
     pointLight.position.set(0, 0, 0);
     scene.add(pointLight);
 }
