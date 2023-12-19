@@ -214,14 +214,18 @@ function onLoadComplete() {
       imagePlane.lookAt(0, spiralHeight, 0);
       imagePlane.rotation.y += Math.PI;
 
-      
-      // Create text sprite
+      // Textsprite position
       const textSprite = createTextSprite(item.text, item.year);
-      const textOffset = -2; // Adjust the offset of the z-axis position
-      textSprite.position.set(imagePlane.position.x, imagePlane.position.y, imagePlane.position.z + textOffset);
-      textSprite.lookAt(0, spiralHeight, 0);
+      const textOffset = 0; // Horizontal offset (if needed)
+      const textVerticalOffset = -2.75; // Adjust this value as needed to position below the image plane
+      textSprite.position.set(
+          imagePlane.position.x + textOffset, 
+          imagePlane.position.y + textVerticalOffset, 
+          imagePlane.position.z
+      );
+      textSprite.lookAt(0, spiralHeight + textVerticalOffset, 0);
       textSprite.rotation.y += Math.PI;
-
+      
       // Create a group for the image and text and add to the cylinder
       const imageGroup = new THREE.Group();
       imageGroup.add(imagePlane);
@@ -236,9 +240,7 @@ function createTextSprite(text, year) {
   canvas.width = 1600;
   canvas.height = 1300;
 
-  context.globalAlpha = 1.0;
   context.font = 'bold 60px Arial';
-  context.fillStyle = 'white';
   context.textAlign = 'center';
 
   const words = text.split(' ');
@@ -246,35 +248,48 @@ function createTextSprite(text, year) {
   const maxLines = 2;
   const lines = [];
   let currentLine = '';
+  const lineHeight = 60;
+  let textHeight = 0;
+
   for (let i = 0; i < words.length; i++) {
-      const word = words[i];
-      const testLine = currentLine + word + ' ';
-      const metrics = context.measureText(testLine);
-      const lineWidth = metrics.width;
-      if (lineWidth > canvas.width && i > 0) {
-          lines.push(currentLine);
-          currentLine = word + ' ';
-      } else {
-          currentLine = testLine;
-      }
-      if (lines.length >= maxLines) {
-          break;
-      }
+    const word = words[i];
+    const testLine = currentLine + word + ' ';
+    const metrics = context.measureText(testLine);
+    const lineWidth = metrics.width;
+    if (lineWidth > canvas.width && i > 0) {
+      lines.push(currentLine);
+      currentLine = word + ' ';
+      textHeight += lineHeight;
+    } else {
+      currentLine = testLine;
+    }
+    if (lines.length >= maxLines) {
+      break;
+    }
   }
   lines.push(currentLine);
+  textHeight += lineHeight * 3; // Additional space for year line and some padding
 
-  const lineHeight = 60;
-  // Adjust startY to position the text higher up on the canvas
-  const startY = canvas.height / 4; // For example, start at 1/4th the height of the canvas
-  for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      const y = startY + (i * lineHeight);
-      context.fillText(line, canvas.width / 2, y);
-  }
+  // Create slightly black background for text area
+  const startY = canvas.height - textHeight - lineHeight * 2; // Adjust the start position
+  context.fillStyle = 'rgba(0, 0, 0, 0.5)'; // Semi-transparent black
+  context.fillRect(0, startY, canvas.width, textHeight);
 
-  context.font = 'bold 60px Arial';
-  const yearLineHeight = 60;
-  const yearY = startY + (lines.length * lineHeight) + yearLineHeight;
+  // Draw text
+  context.fillStyle = 'white';
+  context.strokeStyle = 'black';
+  context.lineWidth = 4;
+  let y = startY + lineHeight; // Adjust the vertical positioning of text
+
+  lines.forEach(line => {
+    context.strokeText(line, canvas.width / 2, y);
+    context.fillText(line, canvas.width / 2, y);
+    y += lineHeight;
+  });
+
+  // Draw year
+  const yearY = startY + textHeight - lineHeight; // Adjust the position of the year text
+  context.strokeText(year, canvas.width / 2, yearY);
   context.fillText(year, canvas.width / 2, yearY);
 
   const texture = new THREE.CanvasTexture(canvas);
@@ -286,9 +301,11 @@ function createTextSprite(text, year) {
 }
 
 
+
+
 // Optional: Setting a timeout for certain actions, if necessary
 setTimeout(() => {
-    // Your delayed actions here
+  // Your delayed actions here
 }, 50);
 }
 
@@ -318,7 +335,7 @@ window.addEventListener('wheel', (event) => {
     cylinder.position.y += rotationDirection * verticalMovementSpeed;
     // rotate the cylinder
     cylinder.rotation.y += rotationAngle * 16;
-  
+    
 });
 
 
