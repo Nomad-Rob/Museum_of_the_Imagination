@@ -127,32 +127,6 @@ function onLoadComplete() {
       }
   });
 
-  // Animate header, h1, and footer into view
-  gsap.to(header, {
-      top: 10,
-      left: 10,
-      transform: 'translate(0, 0)',
-      ease: Power1.easeIn,
-      duration: 0.5
-  });
-
-  gsap.to(h1, {
-      fontSize: 25,
-      top: 10,
-      left: 10,
-      transform: 'translate(0, 0)',
-      width: 150,
-      ease: Power1.easeIn,
-      duration: 0.5
-  });
-
-  gsap.to(footer, {
-      delay: 0.5,
-      opacity: 1,
-      ease: Power1.easeIn,
-      duration: 0.5
-  });
-
   // Reveal the 'started' button with an animation
   gsap.to(started, {
       delay: 0.9,
@@ -160,18 +134,24 @@ function onLoadComplete() {
       duration: 0.5
   });
 
-  // Add an event listener to the 'startedBtn' element
+  // Add an event listener to the 'startBtn' element
   startedBtn.addEventListener('click', () => {
-      continueAnimation();
-      console.log('startedBtn clicked');
-      
-      fetch('images.json')
+    switchCamera('santaCamera');
+    gsap.to(footer, {
+      opacity: 1,
+      duration: 1
+    });
+    continueAnimation();
+    // console.log('startBtn clicked');
+    controls.enabled = true;
+    // console.log(controls.enabled);
+
+    fetch('images.json')
       .then(response => response.json())
       .then(data => {
         displayImagesAndText(data);
       })
   });
-  
   
   function createCylinder() {
     const radius = 10;
@@ -180,18 +160,19 @@ function onLoadComplete() {
 
     const geometry = new THREE.CylinderGeometry(radius, radius, height, radialSegments);
     const material = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide, transparent: true, opacity: 0.0 });
-    cylinder = new THREE.Mesh(geometry, material);
+    const cylinder = new THREE.Mesh(geometry, material);
     cylinder.position.set(0, -221, 0); // Set the position of the cylinder's bottom
     cylinder.rotation.y = -89.883; // Rotate on y axis to have first image lined properly
     window.addEventListener('wheel', () => {
       console.log(cylinder.rotation.y);
     })
     scene.add(cylinder);
+    return(cylinder);
   }
     
 
   function displayImagesAndText(data) {
-    createCylinder();
+    const cylinder = createCylinder();
     const numberOfImages = data.length;
     const circumference = 2 * Math.PI * cylinder.geometry.parameters.radiusTop;
     const spacing = circumference / numberOfImages; // Space between each image group
@@ -228,7 +209,7 @@ function onLoadComplete() {
       imageGroup.add(textSprite);
       cylinder.add(imageGroup);
     });
-}
+  }
 
 
 
@@ -250,7 +231,6 @@ function createTextSprite(text, year) {
   context.textAlign = 'center';
 
   const words = text.split(' ');
-  const maxWordsPerLine = 5;
   const maxLines = 2;
   const lines = [];
   let currentLine = '';
@@ -324,8 +304,6 @@ window.addEventListener('wheel', (event) => {
     cylinder.position.y += rotationDirection * verticalMovementSpeed;
     // rotate the cylinder
     cylinder.rotation.y += rotationAngle * 16;
-
-    
 });
 
 

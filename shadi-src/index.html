@@ -18,7 +18,7 @@
     <!-- <script defer src="/__/firebase/init.js?useEmulator=true"></script> -->
 
     <!-- Linking css styles -->
-    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="styles/styles.scss">
 
     <!-- Loading poppins font from google -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,9 +29,29 @@
     <!-- Vignette effect -->
     <div class="vignette"></div>
 
+    <!-- Loading percentage div -->
+    <div class="loading">
+      <p class="counterLoading">0 %</p>
+    </div>
+
+    <!-- Start button to get into  -->
+    <div class="started">
+      <button class="start-btn">▶</button>
+      <p><strong>Scroll to use this Website</strong></br>Turn up your sound for xmas music!</p>
+    </div>
+
+    <!-- Used for music -->
+    <div class="player">
+      <button class="player-close"></button>
+      <iframe class="player-source" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+
     <!-- Canvas to load all three.js content on -->
     <canvas class="webgl"></canvas>
-
+    
+    <!-- Logo for canvas -->
+    <img src="images/logo.png" alt="logo-image" class="logo-image-canvas">
+    
     <!-- Nav links -->
     <nav class="nav-bar">
       <a href="/"><img src="images/logo.png" alt="logo-image" class="logo-image"></a>
@@ -41,6 +61,10 @@
       </ul>
     </nav>
     <img src="images/cristmas-creative.png" alt="title-image" class="title-image">
+    
+    <footer>
+      <p>Inspired by NOBODY</p>
+    </footer>
 
     <!-- Include Three.js from CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
