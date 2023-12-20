@@ -287,13 +287,13 @@ function onLoadComplete() {
     controls.enabled = true;
     // console.log(controls.enabled);
 
-    fetch('images.json')
+    fetch('/images.json')
       .then(response => response.json())
       .then(data => {
         displayImagesAndText(data);
       })
   });
-
+  
   function displayImagesAndText(data) {
     const numberOfImages = data.length;
     const circumference = 2 * Math.PI * cylinder.geometry.parameters.radiusTop;
