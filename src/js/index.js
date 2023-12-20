@@ -56,7 +56,7 @@ window.addEventListener('mousemove', onMouseMove);
 
 // Audio setup
 const music = new Audio('sounds/silent-night.mp3');
-music.volume = 0.5;
+music.volume = 0.05;
 
 // Loaders setup
 const loadingManager = new THREE.LoadingManager(onLoadComplete, onProgress);
