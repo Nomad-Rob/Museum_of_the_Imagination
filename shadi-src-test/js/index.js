@@ -300,7 +300,7 @@ function onLoadComplete() {
       // Load texture, create image plane and text sprite
       const texture = textureLoader.load(item.imageUrl);
       const imagePlane = new THREE.Mesh(
-        new THREE.PlaneGeometry(10, 10),
+        new THREE.PlaneGeometry(11, 10),
         new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
       );
 
@@ -317,9 +317,8 @@ function onLoadComplete() {
       
       // Create text sprite
       const textSprite = createTextSprite(item.text, item.year);
-      const textOffset = 1;
-      textSprite.position.set(imagePlane.position.x, imagePlane.position.y, imagePlane.position.z - textOffset);
-      textSprite.lookAt(0, spiralHeight, 0);
+      textSprite.position.set(imagePlane.position.x, imagePlane.position.y - 6.6, imagePlane.position.z);
+      textSprite.lookAt(0, spiralHeight - 6.6, 0);
       textSprite.rotation.y += Math.PI;
 
       // Create a group for the image and text and add to the cylinder
@@ -363,19 +362,16 @@ function onLoadComplete() {
     }
   });
 
-
   function createTextSprite(text, year) {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
-    canvas.width = 800;
-    canvas.height = 600;
+    canvas.width = 560;
+    canvas.height = 130;
   
-    context.globalAlpha = 0.0; // Fully transparent
-    context.fillStyle = 'rgba(0, 0, 0, 0)'; // Transparent fill
+    context.fillStyle = 'rgba(0, 0, 0, .4)'; // Transparent fill
     context.fillRect(0, 0, canvas.width, canvas.height);
   
-    context.globalAlpha = 1.0;
-    context.font = '60px Arial';
+    context.font = 'bold 23px Arial';
     context.fillStyle = 'white';
     context.textAlign = 'center';
   
@@ -400,7 +396,7 @@ function onLoadComplete() {
     }
     lines.push(currentLine);
   
-    const lineHeight = 60;
+    const lineHeight = 30;
     const startY = (canvas.height - (lines.length * lineHeight)) / 2;
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
@@ -408,8 +404,8 @@ function onLoadComplete() {
       context.fillText(line, canvas.width / 2, y);
     }
   
-    context.font = '40px Arial';
-    const yearLineHeight = 40;
+    context.font = 'bold 30px Arial';
+    const yearLineHeight = 23;
     const yearY = startY + (lines.length * lineHeight) + yearLineHeight;
     context.fillText(year, canvas.width / 2, yearY);
   
@@ -417,9 +413,10 @@ function onLoadComplete() {
     const spriteMaterial = new THREE.MeshBasicMaterial({
       map: texture,
       transparent: true,
+      opacity: 1,
       side: THREE.DoubleSide
     });
-    const spriteGeometry = new THREE.PlaneGeometry(10, 10);
+    const spriteGeometry = new THREE.PlaneGeometry(11, 2.9);
     const spriteMesh = new THREE.Mesh(spriteGeometry, spriteMaterial);
   
     return spriteMesh;
@@ -611,8 +608,6 @@ function continueAnimation() {
   }, 250);
 
   // Add snow to santa scene
-  snowScene.remove(particles);
-  addSnowflakes(.5);
   santaScene.add(particles);
 }
 
