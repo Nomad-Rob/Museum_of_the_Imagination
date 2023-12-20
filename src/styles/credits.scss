@@ -79,9 +79,19 @@ opacity: 0;
     p {
         position: fixed;
         bottom: 0;
-        margin: 25px;
+        margin: 15px;
         color: #fff;
         z-index: 31;
+
+        span {
+            a {
+                text-decoration: none;
+                color: rgb(0, 179, 255);
+            }
+            &:hover {
+                opacity: .8;
+            }
+        }
     }
 }
 
