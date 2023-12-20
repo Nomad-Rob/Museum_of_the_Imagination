@@ -1,6 +1,6 @@
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import gsap from 'gsap';
-import * as dat from 'dat.gui';
+// import * as dat from 'dat.gui';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 // Sizes
@@ -20,11 +20,8 @@ const loading = document.querySelector('.loading');
 const started = document.querySelector('.started');
 const startBtn = document.querySelector('.start-btn');
 
-// Debug object for future enhancements
-const debugObject = {};
-
 // dat.Gui instantiation
-const gui = new dat.GUI();
+// const gui = new dat.GUI();
 
 // Timeline instantiation
 const tl = gsap.timeline({defaults: {duration: 1}});
@@ -39,7 +36,7 @@ const canvas = document.querySelector(".webgl");
 
 // Rob's Santa Scene
 const santaScene = new THREE.Scene();
-santaScene.background = new THREE.Color('#333333');
+santaScene.background = new THREE.Color('#B6B6B6');
 
 // Main Snow Scene
 const snowScene = new THREE.Scene();
@@ -71,6 +68,7 @@ const gltfLoader = new GLTFLoader(loadingManager);
 let models = [];
 
 // Load models (Santa and Sleigh)
+const modelsGroup = new THREE.Group();
 loadModels();
 
 // Santa Camera setup
@@ -82,9 +80,6 @@ const backgroundCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, -1, 0);
 
 // Choose correct camera to display
 switchCamera('mainCamera');
-
-// Lighting setup
-setupLighting();
 
 // Event listener for player close
 playerClose.addEventListener('click', onClosePlayer);
@@ -103,7 +98,7 @@ const minHeight = 150; // snowflakes placed from 150 to 500 on y axis
 const snowGeometry = new THREE.BufferGeometry();
 
 // Function fills position and velocities arrays with values
-function addSnowflakes () {
+function addSnowflakes (snowflakeOpacity) {
   // 1) Create snowflake geometry
   for(let i=0; i<numSnowflakes; i++) {
     positions.push(
@@ -132,7 +127,7 @@ function addSnowflakes () {
     blending: THREE.AdditiveBlending, // makes snowflake vibrant white
     depthTest: false, // do not determine if object is in front of another for performance
     transparent: true, // enable opacity changes
-    opacity: .7,
+    opacity: snowflakeOpacity,
   });
 
   particles = new THREE.Points(snowGeometry, flakeMaterial);
@@ -161,7 +156,7 @@ function updateSnowParticles() {
   snowGeometry.attributes.position.needsUpdate = true;
 }
  
-addSnowflakes();
+addSnowflakes(.7);
 // console.log(snowGeometry);
 // *********************************************************
 
@@ -225,12 +220,34 @@ leftMountainFgMesh.position.set(-98, -53.9, -6);
 snowScene.add(bgMesh, santaMesh, leftMountainBgMesh, rightMountainBgMesh, mainMountainMesh, rightMountainPreBgMesh, middleMountainMesh, rightMountainPreFgMesh, rightRockFgMesh, leftMountainFgMesh);
 // *********************************************************
 
+
+
+
+
 // *********************************************************
 // Santa page functions (integrating Rob's code)
 // Global scope variables for santa page:
 let cylinder;
 let imageGroup;
 let imageGroupYPosition = 0;
+
+// Create cylinder first to make sure the object is available globally
+function createCylinder() {
+  const radius = 10;
+  const height = 180;
+  const radialSegments = 32; // Number of segments around the cylinder
+
+  const geometry = new THREE.CylinderGeometry(radius, radius, height, radialSegments);
+  const material = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide, transparent: true, opacity: 0.0 });
+  cylinder = new THREE.Mesh(geometry, material);
+  cylinder.position.set(0, 160, 0); // Set the position of the cylinder's bottom
+  cylinder.rotation.y = -95; // Rotate on y axis to have first image lined properly
+  window.addEventListener('wheel', () => {
+    console.log(cylinder.rotation.y);
+  })
+  santaScene.add(cylinder);
+}
+createCylinder();
 
 function onMouseMove(event) {
   // Update mouse position
@@ -274,25 +291,7 @@ function onLoadComplete() {
       })
   });
 
-  function createCylinder() {
-    const radius = 10;
-    const height = 180;
-    const radialSegments = 32; // Number of segments around the cylinder
-
-    const geometry = new THREE.CylinderGeometry(radius, radius, height, radialSegments);
-    const material = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide, transparent: true, opacity: 0.0 });
-    cylinder = new THREE.Mesh(geometry, material);
-    cylinder.position.set(0, -219.9, 0); // Set the position of the cylinder's bottom
-    cylinder.rotation.y = -89.889; // Rotate on y axis to have first image lined properly
-    window.addEventListener('wheel', () => {
-      console.log(cylinder.rotation.y);
-    })
-    santaScene.add(cylinder);
-    return(cylinder);
-  }
-
   function displayImagesAndText(data) {
-    const cylinder = createCylinder();
     const numberOfImages = data.length;
     const circumference = 2 * Math.PI * cylinder.geometry.parameters.radiusTop;
     const spacing = circumference / numberOfImages; // Space between each image group
@@ -301,7 +300,7 @@ function onLoadComplete() {
       // Load texture, create image plane and text sprite
       const texture = textureLoader.load(item.imageUrl);
       const imagePlane = new THREE.Mesh(
-        new THREE.PlaneGeometry(10, 10),
+        new THREE.PlaneGeometry(11, 10),
         new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
       );
 
@@ -318,9 +317,8 @@ function onLoadComplete() {
       
       // Create text sprite
       const textSprite = createTextSprite(item.text, item.year);
-      const textOffset = 1;
-      textSprite.position.set(imagePlane.position.x, imagePlane.position.y, imagePlane.position.z - textOffset);
-      textSprite.lookAt(0, spiralHeight, 0);
+      textSprite.position.set(imagePlane.position.x, imagePlane.position.y - 6.6, imagePlane.position.z);
+      textSprite.lookAt(0, spiralHeight - 6.6, 0);
       textSprite.rotation.y += Math.PI;
 
       // Create a group for the image and text and add to the cylinder
@@ -333,44 +331,47 @@ function onLoadComplete() {
 
   // SCROLLING EVENTS = Not fun!!!!!
   window.addEventListener('wheel', (event) => {
-    console.log('wheel event');
-    const deltaY = event.deltaY;
+    const minRotationY = -96.39;
+    const maxRotationY = -89.12;
 
-    // Rotate the images and text around Santa
-    const rotationAmount = 0.00273; // Adjust this value to control the rotation speed
-    const rotationDirection = deltaY < 0 ? -1 : 1; // Determine rotation direction
-    const rotationAngle = rotationAmount * -rotationDirection;
-
-    models.forEach(model => {
-        model.rotation.y += rotationAngle * 19; // Rotate the models
-    });
-
-    imageGroup.rotation.y += rotationAngle * 10; // Rotate the image group
-
-    // Move the image group up or down
-    const verticalMovementSpeed = 1.63; // Adjust this value to control the speed of vertical movement
-    imageGroupYPosition += rotationDirection * verticalMovementSpeed;
-    imageGroup.position.y = imageGroupYPosition;
-    
-    // Move the cylinder up or down on the y-axis
-    cylinder.position.y += rotationDirection * verticalMovementSpeed;
-    // rotate the cylinder
-    cylinder.rotation.y += rotationAngle * 16;
+    if (cylinder.rotation.y <= maxRotationY && cylinder.rotation.y >= minRotationY) {
+      // console.log('wheel event');
+      const deltaY = event.deltaY;
+  
+      // Rotate the images and text around Santa
+      const rotationAmount = 0.00272; // Adjust this value to control the rotation speed
+      const rotationDirection = deltaY < 0 ? -1 : 1; // Determine rotation direction
+      const rotationAngle = rotationAmount * -rotationDirection;
+  
+      // Rotate models as a group
+      modelsGroup.rotation.y += rotationAngle * 19; // Rotate the models
+      // console.log('models y:', modelsGroup.rotation.y);
+  
+      imageGroup.rotation.y += rotationAngle * 10; // Rotate the image group
+      // console.log('images y:', imageGroup.rotation.y);
+  
+      // Move the image group up or down
+      const verticalMovementSpeed = 1.63; // Adjust this value to control the speed of vertical movement
+      imageGroupYPosition += rotationDirection * verticalMovementSpeed;
+      imageGroup.position.y = imageGroupYPosition;
+      
+      // Move the cylinder up or down on the y-axis
+      cylinder.position.y += rotationDirection * verticalMovementSpeed;
+      // rotate the cylinder
+      cylinder.rotation.y += rotationAngle * 16;
+    }
   });
-
 
   function createTextSprite(text, year) {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
-    canvas.width = 800;
-    canvas.height = 600;
+    canvas.width = 560;
+    canvas.height = 130;
   
-    context.globalAlpha = 0.0; // Fully transparent
-    context.fillStyle = 'rgba(0, 0, 0, 0)'; // Transparent fill
+    context.fillStyle = 'rgba(0, 0, 0, .4)'; // Transparent fill
     context.fillRect(0, 0, canvas.width, canvas.height);
   
-    context.globalAlpha = 1.0;
-    context.font = '60px Arial';
+    context.font = 'bold 23px Arial';
     context.fillStyle = 'white';
     context.textAlign = 'center';
   
@@ -395,7 +396,7 @@ function onLoadComplete() {
     }
     lines.push(currentLine);
   
-    const lineHeight = 60;
+    const lineHeight = 30;
     const startY = (canvas.height - (lines.length * lineHeight)) / 2;
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
@@ -403,8 +404,8 @@ function onLoadComplete() {
       context.fillText(line, canvas.width / 2, y);
     }
   
-    context.font = '40px Arial';
-    const yearLineHeight = 40;
+    context.font = 'bold 30px Arial';
+    const yearLineHeight = 23;
     const yearY = startY + (lines.length * lineHeight) + yearLineHeight;
     context.fillText(year, canvas.width / 2, yearY);
   
@@ -412,9 +413,10 @@ function onLoadComplete() {
     const spriteMaterial = new THREE.MeshBasicMaterial({
       map: texture,
       transparent: true,
+      opacity: 1,
       side: THREE.DoubleSide
     });
-    const spriteGeometry = new THREE.PlaneGeometry(10, 10);
+    const spriteGeometry = new THREE.PlaneGeometry(11, 2.9);
     const spriteMesh = new THREE.Mesh(spriteGeometry, spriteMaterial);
   
     return spriteMesh;
@@ -435,23 +437,24 @@ function loadModels() {
   gltfLoader.load(
       "models/santa.glb",
       (gltf) => {
-          gltf.scene.scale.set(15, 15, 15);
-          // gltf.santaScene.position.y = initialPositionMeshY 0;
-          gltf.scene.position.z = 0;
-          gltf.scene.position.y = -8.3;
-          gltf.scene.position.x = 0;
-          gltf.scene.rotation.x = 0;
-          // gltf.santaScene.rotation.y = initialRotationMeshY 0
+        gltf.scene.scale.set(15, 15, 15);
+        // gltf.santaScene.position.y = initialPositionMeshY 0;
+        gltf.scene.position.z = 0;
+        gltf.scene.position.y = -8.3;
+        gltf.scene.position.x = 0;
+        gltf.scene.rotation.x = 0;
 
-          santaScene.add(gltf.scene);
-          models.push(gltf.scene);
+        // santaScene.add(gltf.scene);
+        models.push(gltf.scene);
 
-          santaScene.traverse((child) => {
-              if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
-                  child.material.envMapIntensity = debugObject.envMapIntensity;
-                  child.material.needsUpdate = true;
-              }
-          });
+        santaScene.traverse((child) => {
+            if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
+                child.material.envMapIntensity = debugObject.envMapIntensity;
+                child.material.needsUpdate = true;
+            }
+        });
+        
+        modelsGroup.add(gltf.scene);
       },
       undefined,
       (error) => {
@@ -464,30 +467,63 @@ function loadModels() {
       "models/sleigh.glb",
       (gltf) => {
           gltf.scene.scale.set(0.15, 0.15, 0.15);
-          gltf.scene.position.y = -23;
+          gltf.scene.position.y = -24;
           gltf.scene.position.x = 0;
-          gltf.scene.position.z = -6;
+          gltf.scene.position.z = 3.9;
           gltf.scene.rotation.y = -1.586;
-          
-          // gltf.scene.rotation.y = 0.00001;
+          gltf.scene.rotation.x = 0.039;
 
-          santaScene.add(gltf.scene);
+          // santaScene.add(gltf.scene);
           models.push(gltf.scene);
+
+          modelsGroup.add(gltf.scene);
       },
       undefined,
       (error) => {
           console.error('An error occurred while loading the Sleigh model:', error);
       }
   );
+
+  // Load forest model
+  gltfLoader.load(
+    "models/mountain.glb",
+    (gltf) => {
+        gltf.scene.scale.set(2300, 2300, 2300);
+        gltf.scene.position.y = 110.9;
+        gltf.scene.position.x = -193;
+        gltf.scene.position.z = 90;
+        
+        // Set name for forest model to add point light to it
+        gltf.scene.name = "Mountain";
+
+        // santaScene.add(gltf.scene);
+        models.push(gltf.scene);
+
+        modelsGroup.add(gltf.scene);
+
+        // Add lighting to forest model
+        setupMountainLighting();
+    },
+    undefined,
+    (error) => {
+        console.error('An error occurred while loading the Forest model:', error);
+    }
+  );
+
+  // Rotate models group
+  modelsGroup.rotation.y = -6;
+
+  // Add all three models as a group to santa scene
+  santaScene.add(modelsGroup);
 }
 
 function setupSantaCamera() {
   // Set up and return the main camera
-  const santaCamera = new THREE.PerspectiveCamera(69, sizes.width / sizes.height, 0.1, 250);
+  const santaCamera = new THREE.PerspectiveCamera(69, sizes.width / sizes.height, 0.1, 3000);
   santaCamera.name = 'Santa Camera';
-  santaCamera.position.x = -60;
-  santaCamera.position.y = 60;
-  santaCamera.position.z = 160;
+  santaCamera.position.x = 1300;
+  santaCamera.position.y = 660;
+  santaCamera.position.z = 330;
   santaCamera.lookAt(0, 0, 0);
   return santaCamera;
 }
@@ -495,22 +531,24 @@ function setupSantaCamera() {
 function setupControls() {
   // Set up orbit controls
   controls.enabled = true;
-  controls.enableRotate = false;
+  // controls.enableRotate = false;
   controls.enablePan = false;
   controls.enableZoom = false;
 }
 
-function setupLighting() {
-  // Set up santaScene lighting (ambient and point lights)
-  const ambientLight = new THREE.AmbientLight(0x404040, 3.9);
-  santaScene.add(ambientLight);
+function setupMountainLighting () {
+  // Point light only for shiny forest background
+  const forestPointLight = new THREE.PointLight(0x404040, 4.3);
+  forestPointLight.position.set(0, 600, 600);
+  const forestModel = models.find(model => model.name === "Mountain");
+  // console.log(forestModel);
+  forestModel.add(forestPointLight);
 }
 
 function continueAnimation() {
   // Music and sounds here, continuous playing
   music.loop = true;
   music.play();
-  
 
   // Animate the opacity of 'started' to 0
   gsap.to(started, {
@@ -531,6 +569,28 @@ function continueAnimation() {
       z: 60,
       duration: 3
   });
+
+  // Animate cylinder
+  gsap.to(cylinder.position, {
+    x: 0,
+    y: -219.9,
+    z: 0,
+    duration: 3
+  });
+  gsap.to(cylinder.rotation, {
+    x: 0,
+    y: -89.889,
+    z: 0,
+    duration: 3
+  });
+
+  // Animate models group
+  gsap.to(modelsGroup.rotation, {
+    x: 0,
+    y: 0,
+    z: 0,
+    duration: 3
+  })
 
   logo.style.display = 'block';
   
@@ -573,6 +633,11 @@ function onClosePlayer() {
   }, 500);
 }
 // *********************************************************
+
+
+
+
+
 
 // Axis helper
 const axesHelper = new THREE.AxesHelper(300);
