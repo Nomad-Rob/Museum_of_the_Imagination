@@ -5,43 +5,108 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Museum of the Imagination</title>
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/10.7.1/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/10.7.1/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/10.7.1/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/10.7.1/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-
     <!-- Linking css styles -->
-    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="styles/credits.scss">
 
     <!-- Loading poppins font from google -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap -->
+        <!--Bootstrap 5.3.2-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
   </head>
   <body>
-    
-    <canvas class="webgl"></canvas>
+    <!-- Vignette effect -->
+    <div class="vignette"></div>
 
-    <nav>
-      <a href="/">Webpage title</a>
+    <!-- Canvas to load all three.js content on -->
+    <canvas class="webgl"></canvas>
+    
+    <!-- Nav links -->
+    <nav class="nav-bar">
+      <a href="/"><img src="images/logo.png" alt="logo-image" class="logo-image"></a>
       <ul>
-        <li>Explore</li>
+        <a href="/index.html">Home</a>
         <a href="/credits.html">Credits</a>
       </ul>
     </nav>
-    <h1 class="title">Give it a spin</h1>
+
+    <!-- Credits div -->
+    <div class="container mx-auto mb-5 d-flex justify-content-center align-items-center credits-container">
+      <div class="credits text-center text-wrap">
+        <h1 class="text-white py-3">Designed and Built by</h1>
+        <div class="containter px-5 pt-3 pb-5">
+          <div class="row">
+            <div class="card col-6 px-4 border-0 bg-transparent">
+              <img src="images/credits/rob.jpg" alt="rob-image" class="card-img-top img-fluid thumbnail">
+              <div class="card-body text-start">
+                <h5 class="card-title text-white py-2">Robert Farley</h5>
+                <p class="card-text text-white">Santa and Sleigh Scene</br>Sound design</br>Three.js Logic</br>SCSS Styling</br>Firebase Hosting</br>JSON Data Creation</p>
+                <h5 class="card-title text-white py-2">Links:</h5>
+                <div class="d-flex justify-content-around">
+                  <p class="text-white"><a href="#" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">Github</a></p>
+                  <p class="text-white"><a href="#" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">LinkedIn</a></p>
+                </div>
+              </div>
+            </div>
+            <div class="card col-6 px-4 border-0 bg-transparent">
+              <img src="images/credits/shadi.jpg" alt="shadi-image" class="card-img-top img-fluid thumbnail">
+              <div class="card-body text-start">
+                <h5 class="card-title text-white py-2">Shadi Shwiyat</h5>
+                <p class="card-text text-white">Opening Page</br>Parallax Logic</br>Three.js Logic</br>Asset Creation</br>SCSS Styling</br>Credits Page</p>
+                <h5 class="card-title text-white py-2">Links:</h5>
+                <div class="d-flex justify-content-around">
+                  <p class="text-white"><a href="#" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">Github</a></p>
+                  <p class="text-white"><a href="#" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">LinkedIn</a></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="model-cc">
+          <h1 class="text-white">Credits to Model Designers</h1>
+          <div class="container px-5 pt-3">
+            <div class="row pb-3">
+              <div class="card col-4 bg-transparent border-0 px-4">
+                <div class="card-body text-start">
+                  <h2 class="text-white card-title">Santa Model</h5>
+                  <p class="card-text text-white">Created by:<br>bharathsrk13</p>
+                  <p class="text-white text-nowrap"><a href="https://skfb.ly/6WKxu" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">Sketchfab Santa</a></p>
+                </div>
+              </div>
+              <div class="card col-4 bg-transparent border-0 px-4">
+                <div class="card-body text-start">
+                  <h2 class="text-white card-title">Sleigh Model</h5>
+                  <p class="card-text text-white">Created by:<br>Kwin Heikoop</p>
+                  <p class="text-white text-nowrap"><a href="https://skfb.ly/6ZwJT" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">Sketchfab Sleigh</a></p>
+                </div>
+              </div>
+              <div class="card col-4 bg-transparent border-0 px-4">
+                <div class="card-body text-start">
+                  <h2 class="text-white card-title">Mountain Model</h5>
+                  <p class="card-text text-white">Created by:<br>artfromheath</p>
+                  <p class="text-white text-nowrap"><a href="https://skfb.ly/6RzJV" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">Sketchfab Mountain</a></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <footer>
+      <p>Inspired by NOBODY</p>
+    </footer>
 
     <!-- Include Three.js from CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-    <!-- Javascript file -->
-    <script type="module" src="js/index.js"></script>
+    <!-- dat.GUI library for real time adjustments -->
+    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script> -->
+
+    <!-- Three.js file for main page -->
+    <script type="module" src="js/credits.js"></script>
   </body>
 </html>
