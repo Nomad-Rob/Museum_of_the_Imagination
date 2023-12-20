@@ -76,34 +76,26 @@ nav ul {
 // Start button styling
 .started {
   position: absolute;
-  top: 50%;
+  top: -60%;
   left: 50%;
-  display: flex;
+  display: none;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 250px;
   transform: translate(-50%, -50%);
-  opacity: 0;
   z-index: 30;
 
   button {
-      width: 35px;
-      height: 35px;
-      background-color: rgb(253, 253, 253);
-      border-radius: 50%;
-      border: none;
-      transition: 0.2s;
-      cursor: pointer;
+    position: absolute;
+    background-color: rgba(253, 253, 253, 0);
+    border: none;
+    transition: 0.2s;
+    cursor: pointer;
 
-      &:hover {
-          opacity: 0.6;
-      }
-  }
-
-  p {
-      margin-top: 10px;
-      color: #fff;
+    &:hover {
+        opacity: 0.93;
+    }
   }
 }
 
@@ -184,16 +176,6 @@ footer {
   z-index: 30;
 }
 
-.logo-image-canvas {
-  display: none;
-  position: absolute;
-  top: 33px;
-  left: 126px;
-  width: 99px;
-  height: 83px;
-  z-index: 30;
-}
-
 .title-image {
   z-index: 30;
   position: absolute;
@@ -203,6 +185,13 @@ footer {
   transform: translate(-50%, 0%);
   display: none;
   pointer-events: none;
+}
+
+.enter-museum {
+  top: 50%;
+  left: 50%;
+  width: 460px!important;
+  height: 845px!important;
 }
 
 /* Temporary styling */
