@@ -300,7 +300,7 @@ function onLoadComplete() {
       // Load texture, create image plane and text sprite
       const texture = textureLoader.load(item.imageUrl);
       const imagePlane = new THREE.Mesh(
-        new THREE.PlaneGeometry(10.6, 10),
+        new THREE.PlaneGeometry(11, 10),
         new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
       );
 
@@ -365,15 +365,13 @@ function onLoadComplete() {
   function createTextSprite(text, year) {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
-    canvas.width = 1400;
-    canvas.height = 1200;
+    canvas.width = 560;
+    canvas.height = 130;
   
-    context.globalAlpha = 0.0; // Fully transparent
-    context.fillStyle = 'rgba(0, 0, 0, 0)'; // Transparent fill
+    context.fillStyle = 'rgba(0, 0, 0, .4)'; // Transparent fill
     context.fillRect(0, 0, canvas.width, canvas.height);
   
-    context.globalAlpha = 1.0;
-    context.font = 'bold 60px Arial';
+    context.font = 'bold 23px Arial';
     context.fillStyle = 'white';
     context.textAlign = 'center';
   
@@ -398,7 +396,7 @@ function onLoadComplete() {
     }
     lines.push(currentLine);
   
-    const lineHeight = 69;
+    const lineHeight = 30;
     const startY = (canvas.height - (lines.length * lineHeight)) / 2;
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
@@ -406,8 +404,8 @@ function onLoadComplete() {
       context.fillText(line, canvas.width / 2, y);
     }
   
-    context.font = 'bold 60px Arial';
-    const yearLineHeight = 30;
+    context.font = 'bold 30px Arial';
+    const yearLineHeight = 23;
     const yearY = startY + (lines.length * lineHeight) + yearLineHeight;
     context.fillText(year, canvas.width / 2, yearY);
   
@@ -415,9 +413,10 @@ function onLoadComplete() {
     const spriteMaterial = new THREE.MeshBasicMaterial({
       map: texture,
       transparent: true,
+      opacity: 1,
       side: THREE.DoubleSide
     });
-    const spriteGeometry = new THREE.PlaneGeometry(11, 10);
+    const spriteGeometry = new THREE.PlaneGeometry(11, 2.9);
     const spriteMesh = new THREE.Mesh(spriteGeometry, spriteMaterial);
   
     return spriteMesh;
