@@ -266,7 +266,7 @@ function onLoadComplete() {
 
   // Reveal the 'started' button with an animation
   gsap.to(started, {
-    top: 100,
+    top: '10%',
     delay: 3.3,
     duration: 2,
     onComplete: () => {
@@ -333,37 +333,37 @@ function onLoadComplete() {
   }
 
   // SCROLLING EVENTS = Not fun!!!!!
-  window.addEventListener('wheel', (event) => {
-    const minRotationY = -96.39;
-    const maxRotationY = -89.12;
+  // window.addEventListener('wheel', (event) => {
+  //   const minRotationY = -96.39;
+  //   const maxRotationY = -89.12;
 
-    if (cylinder.rotation.y <= maxRotationY && cylinder.rotation.y >= minRotationY) {
-      // console.log('wheel event');
-      const deltaY = event.deltaY;
+  //   if (cylinder.rotation.y <= maxRotationY && cylinder.rotation.y >= minRotationY) {
+  //     // console.log('wheel event');
+  //     const deltaY = event.deltaY;
   
-      // Rotate the images and text around Santa
-      const rotationAmount = 0.00272; // Adjust this value to control the rotation speed
-      const rotationDirection = deltaY < 0 ? -1 : 1; // Determine rotation direction
-      const rotationAngle = rotationAmount * -rotationDirection;
+  //     // Rotate the images and text around Santa
+  //     const rotationAmount = 0.00272; // Adjust this value to control the rotation speed
+  //     const rotationDirection = deltaY < 0 ? -1 : 1; // Determine rotation direction
+  //     const rotationAngle = rotationAmount * -rotationDirection;
   
-      // Rotate models as a group
-      modelsGroup.rotation.y += rotationAngle * 19; // Rotate the models
-      // console.log('models y:', modelsGroup.rotation.y);
+  //     // Rotate models as a group
+  //     modelsGroup.rotation.y += rotationAngle * 19; // Rotate the models
+  //     // console.log('models y:', modelsGroup.rotation.y);
   
-      imageGroup.rotation.y += rotationAngle * 10; // Rotate the image group
-      // console.log('images y:', imageGroup.rotation.y);
+  //     imageGroup.rotation.y += rotationAngle * 10; // Rotate the image group
+  //     // console.log('images y:', imageGroup.rotation.y);
   
-      // Move the image group up or down
-      const verticalMovementSpeed = 1.63; // Adjust this value to control the speed of vertical movement
-      imageGroupYPosition += rotationDirection * verticalMovementSpeed;
-      imageGroup.position.y = imageGroupYPosition;
+  //     // Move the image group up or down
+  //     const verticalMovementSpeed = 1.63; // Adjust this value to control the speed of vertical movement
+  //     imageGroupYPosition += rotationDirection * verticalMovementSpeed;
+  //     imageGroup.position.y = imageGroupYPosition;
       
-      // Move the cylinder up or down on the y-axis
-      cylinder.position.y += rotationDirection * verticalMovementSpeed;
-      // rotate the cylinder
-      cylinder.rotation.y += rotationAngle * 16;
-    }
-  });
+  //     // Move the cylinder up or down on the y-axis
+  //     cylinder.position.y += rotationDirection * verticalMovementSpeed;
+  //     // rotate the cylinder
+  //     cylinder.rotation.y += rotationAngle * 16;
+  //   }
+  // });
 
   function createTextSprite(text, year) {
     const canvas = document.createElement('canvas');
@@ -534,9 +534,9 @@ function setupSantaCamera() {
 function setupControls() {
   // Set up orbit controls
   controls.enabled = true;
-  controls.enableRotate = false;
-  controls.enablePan = false;
-  controls.enableZoom = false;
+  // controls.enableRotate = false;
+  // controls.enablePan = false;
+  // controls.enableZoom = false;
 }
 
 function setupMountainLighting () {
