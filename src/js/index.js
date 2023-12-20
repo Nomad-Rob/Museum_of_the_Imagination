@@ -13,7 +13,6 @@ const sizes = {
 const player = document.querySelector('.player');
 const playerClose = document.querySelector('.player-close');
 const playerSource = document.querySelector('.player-source');
-const logo = document.querySelector('.logo-image-canvas');
 const counterLoading = document.querySelector('.counterLoading');
 const footer = document.querySelector('footer');
 const loading = document.querySelector('.loading');
@@ -267,10 +266,14 @@ function onLoadComplete() {
 
   // Reveal the 'started' button with an animation
   gsap.to(started, {
-      delay: 4,
-      opacity: 1,
-      duration: 1
-  });
+    top: 100,
+    delay: 3.3,
+    duration: 2,
+    onComplete: () => {
+        counterLoading.style.display = 'none';
+    }
+});
+  // gsap.fromTo(started, {y: "-100%"}, {y: "0%"});
 
   // Add an event listener to the 'startBtn' element
   startBtn.addEventListener('click', () => {
@@ -531,7 +534,7 @@ function setupSantaCamera() {
 function setupControls() {
   // Set up orbit controls
   controls.enabled = true;
-  // controls.enableRotate = false;
+  controls.enableRotate = false;
   controls.enablePan = false;
   controls.enableZoom = false;
 }
@@ -591,8 +594,6 @@ function continueAnimation() {
     z: 0,
     duration: 3
   })
-
-  logo.style.display = 'block';
   
   setTimeout(() => {
     loading.style.visibility = "hidden"
@@ -651,11 +652,9 @@ function switchCamera(cameraToSelect) {
     renderer.scene = santaScene;
 
     // Clearing current html elements
-    const navBar = document.querySelector('.nav-bar');
     const titleImage = document.querySelector('.title-image');
     const vignetteDiv = document.querySelector('.vignette');
   
-    navBar.style.display = 'none';
     titleImage.style.display = 'none';
     vignetteDiv.style.display = 'none';
   } else {
@@ -718,6 +717,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   navBar.style.display = 'flex';
   titleImage.style.display = 'block';
+  started.style.display = 'flex';
 });
 
 // Timeline magic *****************************************************
@@ -731,8 +731,8 @@ tl.fromTo(middleMountainMesh.position, { y: -200 }, { y: -72, delay: -.5 });
 tl.fromTo(rightMountainPreFgMesh.position, { y: -180 }, { y: -49.5, delay: -.7 });
 
 // Title, nav bar, and footer animation
-tl.fromTo('.nav-bar', {y: "-100%"}, {y: "0%"});
-tl.fromTo('.title-image', {opacity: 0}, {opacity: 1, delay: -.6});
+tl.fromTo('.nav-bar', {opacity: 0}, {opacity: 1});
+tl.fromTo('.title-image', {opacity: 0}, {opacity: 1, delay: -.9});
 
 // onComplete callback allows parallax to only work after timeline is finished
 tl.eventCallback("onComplete", () => {

@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Museum of the Imagination</title>
 
+    <!-- update the version number as needed -->
+    <!-- <script defer src="/__/firebase/10.7.1/firebase-app-compat.js"></script> -->
+    <!-- include only the Firebase features as you need -->
+    <!-- <script defer src="/__/firebase/10.7.1/firebase-analytics-compat.js"></script>
+    <script defer src="/__/firebase/10.7.1/firebase-remote-config-compat.js"></script>
+    <script defer src="/__/firebase/10.7.1/firebase-performance-compat.js"></script> -->
+    <!-- 
+      initialize the SDK after all desired features are loaded, set useEmulator to false
+      to avoid connecting the SDK to running emulators.
+    -->
+    <!-- <script defer src="/__/firebase/init.js?useEmulator=true"></script> -->
+
+    <!-- Linking css styles -->
     <link rel="stylesheet" href="styles/styles.scss">
 
     <!-- Loading poppins font from google -->
@@ -23,8 +36,7 @@
 
     <!-- Start button to get into  -->
     <div class="started">
-      <button class="start-btn">▶</button>
-      <p><strong>Scroll to use this Website</strong></br>Turn up your sound for xmas music!</p>
+      <button class="start-btn"><img src="images/enter-museum.png" alt="enter-museum" class="enter-museum"></button>
     </div>
 
     <!-- Used for music -->
@@ -35,9 +47,6 @@
 
     <!-- Canvas to load all three.js content on -->
     <canvas class="webgl"></canvas>
-    
-    <!-- Logo for canvas -->
-    <img src="images/logo.png" alt="logo-image" class="logo-image-canvas">
     
     <!-- Nav links -->
     <nav class="nav-bar">
