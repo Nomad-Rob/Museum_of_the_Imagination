@@ -1,7 +1,7 @@
 .btn__primary, .btn__primary:visited {
-  background-color: #c83f11; /* Red */
+  background-color: #7a1212; /* Red */
   font-family: barlow, serif;
-  border: 2px solid #c83f11;
+  border: 2px solid #7a1212;
   padding: 1rem;
   border-radius: 0.5rem;
   font-size: 2rem;
@@ -11,12 +11,12 @@
   text-align: center;
 }
 .btn__primary:focus, .btn__primary:hover {
-  background-color: #006400; /* Green */
-  color: #c83f11; /* Red */
+  background-color: #6787B7;
+  color: #ECD898; 
   border-radius: 0;
 }
 .btn__submit {
-  background-color: #006400; /* Green */
+  background-color: #7a1212; 
   color: #fff;
   border: none;
   padding: 1rem 0;
@@ -26,7 +26,7 @@
 .btn__submit:focus, .btn__submit:hover {
   background-color: #d1d0d0; /* White */
   color: #000;
-  border-color: #006400; /* Green */
+  border-color: #ECD898; /* Green */
   border-radius: 1rem;
 }
 *, *::after, *::before {
@@ -57,14 +57,14 @@ img {
   height: auto;
 }
 a {
-  color: #006400; /* Green */
+  color: rgb(0, 179, 255);
 }
 a:active, a:visited {
-  color: #006400; /* Green */
+  color: #C2A84D; /* Green */
 }
 .heading__primary {
   font-family: "Montserrat Alternates", sans-serif;
-  color: #006400; /* Green */
+  color: #002855; /* Green */
 }
 .heading__primary--accent {
   display: block;
@@ -95,12 +95,12 @@ a:active, a:visited {
 }
 .heading__tertiary {
   font-family: "Barlow", sans-serif;
-  background-color: #006400; /* Green */
+  background-color: #6787B7; /* Green */
   color: #fff;
   padding: 1.5rem;
 }
 .heading__tertiary--dark {
-  background-color: #006400; /* Green */
+  background-color: #6787B7; /* Green */
   text-align: center;
 }
 .heading__tertiary--transparent {
@@ -111,7 +111,7 @@ a:active, a:visited {
   display: none;
 }
 nav {
-  background-color: #006400; /* Green */
+  background-color:  #002855;
   color: #fff;
   padding: 1rem;
 }
@@ -177,7 +177,7 @@ nav {
   padding: 1rem;
 }
 .navigation__list-item:last-of-type {
-  background-color: #006400; /* Green */
+  background-color: #C2A84D; /* Green */
 }
 .navigation__link {
   color: #fff;
@@ -190,7 +190,7 @@ nav {
   text-decoration: underline;
 }
 .navigation__link:active {
-  color: #006400; /* Green */
+  color: #C2A84D; /* Green */
 }
 .navigation__menu {
   transition: all 0.3s ease-out;
@@ -205,7 +205,7 @@ nav {
 .navigation__cart {
   display: inline-block;
   padding: 1rem;
-  border: 2px solid #006400; /* Green */
+  border: 2px solid #BDD6E6; /* Green */
   border-radius: 1rem;
   margin: 0 1rem;
 }
@@ -257,7 +257,7 @@ header {
   padding: 3rem 0;
 }
 .search__input {
-  border: 2px solid #006400; /* Green */
+  border: 2px solid #002855; /* Green */
   padding: 1rem;
   font-family: inherit;
   border-radius: 1rem;
@@ -296,7 +296,7 @@ header {
 .shop {
   display: flex;
   flex-flow: row wrap;
-  background-color: #db0c0c; /* Green */
+  background-color: #BDD6E6; /* Green */
   color: #fff;
   padding: 2rem;
   justify-content: space-evenly;
@@ -424,7 +424,7 @@ header {
   max-width: calc(15rem - 8px);
   border-radius: 100%;
   margin: 3rem 0;
-  box-shadow: 0 0 0 4px #543a2d, 0 0 0 8px #006400; /* Green */
+  box-shadow: 0 0 0 4px #ECD898, 0 0 0 8px #002855; /* Green */
   display: block;
 }
 .happyclients__text {
@@ -438,7 +438,7 @@ header {
   top: 0.5rem;
   line-height: 100%;
   font-size: 2.4rem;
-  color: #006400; /* Green */
+  color: #002855; /* Green */
 }
 .happyclients__text::before {
   content: open-quote;
@@ -459,14 +459,14 @@ header {
   margin: 1rem;
 }
 .happyclients__dot--active {
-  background-color: #006400; /* Green */
+  background-color: #002855; /* Green */
 }
 .happyclients__arrows--left, .happyclients__arrows--right {
   font-size: 7rem;
   position: absolute;
   background-color: transparent;
   border: none;
-  color: #006400; /* Green */
+  color: #002855; /* Green */
 }
 .happyclients__arrows--left:focus, .happyclients__arrows--left:hover, .happyclients__arrows--right:focus, .happyclients__arrows--right:hover {
   background-color: #d1d0d0; /* White */
@@ -499,13 +499,13 @@ header {
   padding: 2rem 1rem;
   margin-top: 2rem;
   max-width: 100rem;
-  border-left: 2px solid #006400; /* Green */
+  border-left: 2px solid #C2A84D; /* Green */
 }
 .about__text::first-letter {
   font-weight: bold;
 }
 .contact {
-  background-color: #db0c0c; /* Green */
+  background-color: #002855; /* Green */
   color: #fff;
   padding: 4rem 0;
   display: flex;
@@ -513,7 +513,7 @@ header {
   justify-content: space-evenly;
 }
 .contact__box {
-  background-color: #006400; /* Green */
+  background-color: #BDD6E6; /* Green */
   margin: 2rem;
   margin-bottom: 4rem;
   padding: 2rem;
