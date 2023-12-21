@@ -135,6 +135,7 @@ nav {
   position: relative;
   background-color: transparent;
 }
+
 .navigation__button--active .navigation__icon {
   background-color: transparent;
 }
@@ -407,8 +408,8 @@ header {
   flex-flow: column;
   justify-content: center;
   align-items: center;
-  border-top: 4px solid #006400; /* Green */
-  border-bottom: 4px solid #006400; /* Green */
+  border-top: 4px solid #c83f11; /* Green */
+  border-bottom: 4px solid #c83f11; /* Green */
   position: relative;
   box-shadow: 0 0 0 1rem #fff;
   max-width: 90%;
@@ -424,7 +425,7 @@ header {
   max-width: calc(15rem - 8px);
   border-radius: 100%;
   margin: 3rem 0;
-  box-shadow: 0 0 0 4px #ECD898, 0 0 0 8px #002855; /* Green */
+  box-shadow: 0 0 0 4px #c83f11, 0 0 0 8px #002855; /* Green */
   display: block;
 }
 .happyclients__text {
