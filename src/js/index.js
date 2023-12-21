@@ -1,4 +1,4 @@
-import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
+// import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import gsap from 'gsap';
 // import * as dat from 'dat.gui';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -46,9 +46,9 @@ renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(3);
 
 // Controls, set initally to false when page is loaded
-const controls = new OrbitControls(mainCamera, canvas);
-setupControls();
-controls.enabled = false;
+// const controls = new OrbitControls(mainCamera, canvas);
+// setupControls();
+// controls.enabled = false;
 
 // Mouse move tracking
 let mouse = new THREE.Vector2();
@@ -254,6 +254,12 @@ function onMouseMove(event) {
   mouse.y = -(event.clientY / sizes.height) * 2 + 1;
 }
 
+function onProgress(itemUrl, itemsLoaded, itemsTotal) {
+  // Update progress for loading resources
+  const progressRatio = itemsLoaded / itemsTotal;
+  counterLoading.innerHTML = `${(progressRatio * 100).toFixed(0)}%`;
+}
+
 function onLoadComplete() {
   // Hide the loading percentage counter and display the main elements
   gsap.to(counterLoading, {
@@ -262,18 +268,17 @@ function onLoadComplete() {
       onComplete: () => {
           counterLoading.style.display = 'none';
       }
-  });
-
-  // Reveal the 'started' button with an animation
-  gsap.to(started, {
-    top: 100,
-    delay: 3.3,
-    duration: 2,
-    onComplete: () => {
+    });
+    
+    // Reveal the 'started' button with an animation
+    gsap.to(started, {
+      top: '13%',
+      delay: 1.6,
+      duration: 2,
+      onComplete: () => {
         counterLoading.style.display = 'none';
     }
-});
-  // gsap.fromTo(started, {y: "-100%"}, {y: "0%"});
+  });
 
   // Add an event listener to the 'startBtn' element
   startBtn.addEventListener('click', () => {
@@ -284,7 +289,7 @@ function onLoadComplete() {
     });
     continueAnimation();
     // console.log('startBtn clicked');
-    controls.enabled = true;
+    // controls.enabled = true;
     // console.log(controls.enabled);
 
     fetch('/images.json')
@@ -334,35 +339,33 @@ function onLoadComplete() {
 
   // SCROLLING EVENTS = Not fun!!!!!
   window.addEventListener('wheel', (event) => {
-    const minRotationY = -96.39;
-    const maxRotationY = -89.12;
+    // const minRotationY = -96.39;
+    // const maxRotationY = -89.12;
 
-    if (cylinder.rotation.y <= maxRotationY && cylinder.rotation.y >= minRotationY) {
-      // console.log('wheel event');
-      const deltaY = event.deltaY;
-  
-      // Rotate the images and text around Santa
-      const rotationAmount = 0.00272; // Adjust this value to control the rotation speed
-      const rotationDirection = deltaY < 0 ? -1 : 1; // Determine rotation direction
-      const rotationAngle = rotationAmount * -rotationDirection;
-  
-      // Rotate models as a group
-      modelsGroup.rotation.y += rotationAngle * 19; // Rotate the models
-      // console.log('models y:', modelsGroup.rotation.y);
-  
-      imageGroup.rotation.y += rotationAngle * 10; // Rotate the image group
-      // console.log('images y:', imageGroup.rotation.y);
-  
-      // Move the image group up or down
-      const verticalMovementSpeed = 1.63; // Adjust this value to control the speed of vertical movement
-      imageGroupYPosition += rotationDirection * verticalMovementSpeed;
-      imageGroup.position.y = imageGroupYPosition;
-      
-      // Move the cylinder up or down on the y-axis
-      cylinder.position.y += rotationDirection * verticalMovementSpeed;
-      // rotate the cylinder
-      cylinder.rotation.y += rotationAngle * 16;
-    }
+    // console.log('wheel event');
+    const deltaY = event.deltaY;
+
+    // Rotate the images and text around Santa
+    const rotationAmount = 0.00272; // Adjust this value to control the rotation speed
+    const rotationDirection = deltaY < 0 ? -1 : 1; // Determine rotation direction
+    const rotationAngle = rotationAmount * -rotationDirection;
+
+    // Rotate models as a group
+    modelsGroup.rotation.y += rotationAngle * 19; // Rotate the models
+    // console.log('models y:', modelsGroup.rotation.y);
+
+    imageGroup.rotation.y += rotationAngle * 10; // Rotate the image group
+    // console.log('images y:', imageGroup.rotation.y);
+
+    // Move the image group up or down
+    const verticalMovementSpeed = 1.63; // Adjust this value to control the speed of vertical movement
+    imageGroupYPosition += rotationDirection * verticalMovementSpeed;
+    imageGroup.position.y = imageGroupYPosition;
+    
+    // Move the cylinder up or down on the y-axis
+    cylinder.position.y += rotationDirection * verticalMovementSpeed;
+    // rotate the cylinder
+    cylinder.rotation.y += rotationAngle * 16;
   });
 
   function createTextSprite(text, year) {
@@ -429,12 +432,6 @@ function onLoadComplete() {
   setTimeout(() => {}, 50);
 }
 
-function onProgress(itemUrl, itemsLoaded, itemsTotal) {
-  // Update progress for loading resources
-  const progressRatio = itemsLoaded / itemsTotal;
-  counterLoading.innerHTML = `${(progressRatio * 100).toFixed(0)}%`;
-}
-
 function loadModels() {
   // Load Santa Model
   gltfLoader.load(
@@ -476,7 +473,6 @@ function loadModels() {
           gltf.scene.rotation.y = -1.586;
           gltf.scene.rotation.x = 0.039;
 
-          // santaScene.add(gltf.scene);
           models.push(gltf.scene);
 
           modelsGroup.add(gltf.scene);
@@ -487,7 +483,7 @@ function loadModels() {
       }
   );
 
-  // Load forest model
+  // Load Mountains
   gltfLoader.load(
     "models/mountain.glb",
     (gltf) => {
@@ -499,7 +495,6 @@ function loadModels() {
         // Set name for forest model to add point light to it
         gltf.scene.name = "Mountain";
 
-        // santaScene.add(gltf.scene);
         models.push(gltf.scene);
 
         modelsGroup.add(gltf.scene);
@@ -509,7 +504,229 @@ function loadModels() {
     },
     undefined,
     (error) => {
-        console.error('An error occurred while loading the Forest model:', error);
+        console.error('An error occurred while loading the Mountains:', error);
+    }
+  );
+
+  // Load Green/Red Candy Model
+  gltfLoader.load(
+    "models/candy_cane_1.glb",
+    (gltf) => {
+        gltf.scene.scale.set(90, 90, 90);
+        gltf.scene.position.y = 3;
+        gltf.scene.position.x = 88;
+        gltf.scene.position.z = -81;
+        gltf.scene.rotation.y = -2.9;
+        gltf.scene.rotation.z = -.3;
+
+        models.push(gltf.scene);
+
+        modelsGroup.add(gltf.scene);
+    },
+    undefined,
+    (error) => {
+        console.error('An error occurred while loading the Red/Green Candy model:', error);
+    }
+  );
+
+  // Load Green/Red 2 Candy Model
+  gltfLoader.load(
+    "models/candy_cane_1.glb",
+    (gltf) => {
+        gltf.scene.scale.set(90, 90, 90);
+        gltf.scene.position.x = -84;
+        gltf.scene.position.y = 3;
+        gltf.scene.position.z = 96;
+        gltf.scene.rotation.y = 2.4;
+        gltf.scene.rotation.z = -.3;
+
+        models.push(gltf.scene);
+
+        modelsGroup.add(gltf.scene);
+    },
+    undefined,
+    (error) => {
+        console.error('An error occurred while loading the Red/Green 2 Candy model:', error);
+    }
+  );
+
+  // Load Green/Red 2 Candy Model
+  gltfLoader.load(
+    "models/candy.glb",
+    (gltf) => {
+        gltf.scene.scale.set(.3, .3, .3);
+        gltf.scene.position.x = -45;
+        gltf.scene.position.y = -20.7;
+        gltf.scene.position.z = 189;
+        gltf.scene.rotation.y = -.8;
+        gltf.scene.rotation.z = -.1;
+
+        models.push(gltf.scene);
+
+        modelsGroup.add(gltf.scene);
+    },
+    undefined,
+    (error) => {
+        console.error('An error occurred while loading the Red Candy model:', error);
+    }
+  );
+
+  // Load Green/Red 2 Candy Model
+  gltfLoader.load(
+    "models/candy.glb",
+    (gltf) => {
+        gltf.scene.scale.set(.3, .3, .3);
+        gltf.scene.position.x = 107;
+        gltf.scene.position.y = -3.2;
+        gltf.scene.position.z = -21;
+        gltf.scene.rotation.y = 0;
+        gltf.scene.rotation.z = -.1;
+
+        models.push(gltf.scene);
+
+        modelsGroup.add(gltf.scene);
+    },
+    undefined,
+    (error) => {
+        console.error('An error occurred while loading the Red Candy 2 model:', error);
+    }
+  );
+
+  // Load Christmas Tree Model
+  gltfLoader.load(
+    "models/christmas_tree.glb",
+    (gltf) => {
+        gltf.scene.scale.set(.06, .06, .06);
+        gltf.scene.position.y = 40;
+        gltf.scene.position.x = -78;
+        gltf.scene.position.z = -160;
+
+        models.push(gltf.scene);
+
+        modelsGroup.add(gltf.scene);
+    },
+    undefined,
+    (error) => {
+        console.error('An error occurred while loading the Christmas Tree model:', error);
+    }
+  );
+
+  // Load Christmas Tree Model
+  gltfLoader.load(
+    "models/christmas_tree_2.glb",
+    (gltf) => {
+        gltf.scene.scale.set(23, 26, 23);
+        gltf.scene.position.y = -24;
+        gltf.scene.position.x = 98;
+        gltf.scene.position.z = 149;
+
+        models.push(gltf.scene);
+
+        modelsGroup.add(gltf.scene);
+    },
+    undefined,
+    (error) => {
+        console.error('An error occurred while loading the Christmas Tree 2 model:', error);
+    }
+  );
+
+  // Load Gift Model
+  gltfLoader.load(
+    "models/gifts_1.glb",
+    (gltf) => {
+        gltf.scene.scale.set(3, 3, 3);
+        gltf.scene.position.x = -84;
+        gltf.scene.position.y = -16;
+        gltf.scene.position.z = -58;
+        gltf.scene.rotation.y = -0.067;
+
+        models.push(gltf.scene);
+
+        modelsGroup.add(gltf.scene);
+    },
+    undefined,
+    (error) => {
+        console.error('An error occurred while loading the Gift 1 model:', error);
+    }
+  );
+
+  // Load Gift Model
+  gltfLoader.load(
+    "models/gifts_1.glb",
+    (gltf) => {
+        gltf.scene.scale.set(3, 3, 3);
+        gltf.scene.position.x = -42;
+        gltf.scene.position.y = -19;
+        gltf.scene.position.z = -71;
+        gltf.scene.rotation.y = .36;
+
+        models.push(gltf.scene);
+
+        modelsGroup.add(gltf.scene);
+    },
+    undefined,
+    (error) => {
+        console.error('An error occurred while loading the Gift 2 model:', error);
+    }
+  );
+
+  // Load Gift Model
+  gltfLoader.load(
+    "models/gifts_1.glb",
+    (gltf) => {
+        gltf.scene.scale.set(3, 3, 3);
+        gltf.scene.position.x = 82;
+        gltf.scene.position.y = -26;
+        gltf.scene.position.z = 126;
+        gltf.scene.rotation.y = -2.8;
+
+        models.push(gltf.scene);
+
+        modelsGroup.add(gltf.scene);
+    },
+    undefined,
+    (error) => {
+        console.error('An error occurred while loading the Gift 3 model:', error);
+    }
+  );
+
+  // Load Deer Model
+  gltfLoader.load(
+    "models/christmas_light_deer.glb",
+    (gltf) => {
+        gltf.scene.scale.set(11, 11, 11);
+        gltf.scene.position.x = 201;
+        gltf.scene.position.y = -24;
+        gltf.scene.position.z = 67;
+        gltf.scene.rotation.y = 1.5;
+
+        models.push(gltf.scene);
+
+        modelsGroup.add(gltf.scene);
+    },
+    undefined,
+    (error) => {
+        console.error('An error occurred while loading the Deer model:', error);
+    }
+  );
+
+  // Load Snowman Model
+  gltfLoader.load(
+    "models/snowman.glb",
+    (gltf) => {
+        gltf.scene.scale.set(39, 39, 39);
+        gltf.scene.position.x = 231;
+        gltf.scene.position.y = -32;
+        gltf.scene.position.z = 142;
+        gltf.scene.rotation.y = 2.53;
+
+        models.push(gltf.scene);
+
+        modelsGroup.add(gltf.scene);
+    },
+    undefined,
+    (error) => {
+        console.error('An error occurred while loading the Snowman model:', error);
     }
   );
 
@@ -531,21 +748,22 @@ function setupSantaCamera() {
   return santaCamera;
 }
 
-function setupControls() {
-  // Set up orbit controls
-  controls.enabled = true;
-  controls.enableRotate = false;
-  controls.enablePan = false;
-  controls.enableZoom = false;
-}
+// function setupControls() {
+//   // Set up orbit controls
+//   controls.enabled = true;
+//   controls.enableRotate = false;
+//   controls.enablePan = false;
+//   controls.enableZoom = false;
+// }
 
 function setupMountainLighting () {
-  // Point light only for shiny forest background
-  const forestPointLight = new THREE.PointLight(0x404040, 4.3);
-  forestPointLight.position.set(0, 600, 600);
+  // Point For mountain background
+  const forestPointLight = new THREE.PointLight(0x404040, 1.3);
+  const forestAmbientLight = new THREE.AmbientLight(0x404040, 1.9);
+  forestPointLight.position.set(0, 900, 360);
   const forestModel = models.find(model => model.name === "Mountain");
   // console.log(forestModel);
-  forestModel.add(forestPointLight);
+  forestModel.add(forestPointLight, forestAmbientLight);
 }
 
 function continueAnimation() {
@@ -647,7 +865,7 @@ santaScene.add(axesHelper);
 // Function switches between cameras when "Enter Museum" button is clicked
 function switchCamera(cameraToSelect) {
   if (cameraToSelect === 'santaCamera') {
-    controls.object = santaCamera;
+    // controls.object = santaCamera;
     renderer.camera = santaCamera;
     renderer.scene = santaScene;
 
@@ -658,7 +876,7 @@ function switchCamera(cameraToSelect) {
     titleImage.style.display = 'none';
     vignetteDiv.style.display = 'none';
   } else {
-    controls.object = mainCamera;
+    // controls.object = mainCamera;
     renderer.camera = mainCamera;
     renderer.scene = snowScene;
   }
@@ -681,7 +899,7 @@ function animate() {
   }
 
   // Update the control each iteration of loop
-  controls.update();
+  // controls.update();
 }
 animate();
 // parallaxLoop();

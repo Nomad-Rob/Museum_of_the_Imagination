@@ -55,7 +55,7 @@ nav ul {
 
 // Credits page
 .credits {
-    background-color: rgba(0, 0, 0, .3);
+    background-color: rgba(0, 0, 0, .5);
     border-radius: 30px;
     z-index: 39;
 
@@ -66,6 +66,10 @@ nav ul {
     p {
         font-size: 30px;
     }
+}
+
+.credits-container {
+    display: none;
 }
 
 .card-title {
