@@ -1,6 +1,5 @@
 import gsap from 'gsap';
 // import * as dat from 'dat.gui';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 // Sizes
 const sizes = {
@@ -10,6 +9,7 @@ const sizes = {
 
 // DOM Elements
 const footer = document.querySelector('footer');
+const credits = document.querySelector('.credits-container');
 
 // dat.Gui instantiation
 // const gui = new dat.GUI();
@@ -211,14 +211,15 @@ window.addEventListener('resize', () => {
 // Removing disply: none attribute on title image and nav bar
 document.addEventListener("DOMContentLoaded", () => {
   const navBar = document.querySelector('.nav-bar');
-  const titleImage = document.querySelector('.title-image');
 
   navBar.style.display = 'flex';
+  credits.style.display = 'flex';
 });
 
 // Timeline magic *****************************************************
 // Bring credits section up
 tl.to(footer, {opacity: 1, duration: .01});
+tl.fromTo(credits, {opacity: 0}, {opacity: 1, duration: 1});
 
 
 // onComplete callback allows parallax to only work after timeline is finished
