@@ -758,7 +758,7 @@ function setupSantaCamera() {
 
 function setupMountainLighting () {
   // Point For mountain background
-  const forestPointLight = new THREE.PointLight(0x404040, 1.3);
+  const forestPointLight = new THREE.PointLight(0x404040, 1.9);
   const forestAmbientLight = new THREE.AmbientLight(0x404040, 1.9);
   forestPointLight.position.set(0, 900, 360);
   const forestModel = models.find(model => model.name === "Mountain");
@@ -853,14 +853,9 @@ function onClosePlayer() {
 }
 // *********************************************************
 
-
-
-
-
-
 // Axis helper
-const axesHelper = new THREE.AxesHelper(300);
-santaScene.add(axesHelper);
+// const axesHelper = new THREE.AxesHelper(300);
+// santaScene.add(axesHelper);
 
 // Function switches between cameras when "Enter Museum" button is clicked
 function switchCamera(cameraToSelect) {
