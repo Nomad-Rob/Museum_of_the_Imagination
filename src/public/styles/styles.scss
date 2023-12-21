@@ -161,6 +161,11 @@ nav ul {
 footer {
   opacity: 0;
   p {
+      background-color: rgba(0, 0, 0, .5);
+      padding: 3px;
+      padding-left: 6px;
+      padding-right: 6px;
+      border-radius: 6px;
       position: absolute;
       bottom: 0;
       margin: 15px;
