@@ -3,7 +3,7 @@
 <h3 align="center">#Clausville Creative</h3>
 <div align="center">
   <a href="https://github.com/Nomad-Rob/Museum_of_the_Imagination">
-    <img src="../Museum_of_the_Imagination/src/public/images/homepage.png" alt="Homepage">
+    <img src="https://raw.githubusercontent.com/Nomad-Rob/Museum_of_the_Imagination/main/src/public/images/homepage.png" alt="Homepage">
   </a>
 
   <p align="center">
